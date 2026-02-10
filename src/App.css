@@ -126,3 +126,24 @@
     filter: drop-shadow(0 0 16px rgba(16,185,129,1));
   }
 }
+.video-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.video-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
+}
+
+.video-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-color);
+}
+
+
+.video-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgb(124, 45, 226),
+    rgb(109, 16, 185)
+  );
+}

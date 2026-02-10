@@ -15,23 +15,31 @@ export default function Particles({ count = 40 }) {
       force: isMobile ? 0.6 : 1.2,
       maxDpr: isMobile ? 1.5 : 2,
     };
+    
     const resetMouse = () => {
       mouse.current.x = -9999;
       mouse.current.y = -9999;
     };
 
+    const getFullHeight = () => Math.max(
+      document.body.scrollHeight,
+      document.documentElement.scrollHeight,
+      window.innerHeight
+    );
+
     const dpr = Math.min(window.devicePixelRatio || 1, config.maxDpr);
+    const fullHeight = getFullHeight();
 
     canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
+    canvas.height = fullHeight * dpr;
     canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
+    canvas.style.height = fullHeight + "px";
 
     ctx.scale(dpr, dpr);
 
     particles.current = Array.from({ length: config.count }).map(() => {
       const x = Math.random() * window.innerWidth;
-      const y = Math.random() * window.innerHeight;
+      const y = Math.random() * fullHeight;
 
       return {
         x,
@@ -52,7 +60,8 @@ export default function Particles({ count = 40 }) {
 
     let rafId;
     const animate = () => {
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      const currentFullHeight = getFullHeight();
+      ctx.clearRect(0, 0, window.innerWidth, currentFullHeight);
 
       particles.current.forEach((p) => {
         const dx = p.x - mouse.current.x;
@@ -91,12 +100,12 @@ export default function Particles({ count = 40 }) {
         if (p.x < padding || p.x > window.innerWidth - padding) {
           p.vx *= -0.8;
         }
-        if (p.y < padding || p.y > window.innerHeight - padding) {
+        if (p.y < padding || p.y > currentFullHeight - padding) {
           p.vy *= -0.8;
         }
 
         p.x = Math.max(padding, Math.min(window.innerWidth - padding, p.x));
-        p.y = Math.max(padding, Math.min(window.innerHeight - padding, p.y));
+        p.y = Math.max(padding, Math.min(currentFullHeight - padding, p.y));
 
         p.shimmer += 0.03;
         const sparkle = Math.sin(p.shimmer) * 0.3;
@@ -114,20 +123,23 @@ export default function Particles({ count = 40 }) {
 
     const handleMove = (e) => {
       mouse.current.x = e.clientX;
-      mouse.current.y = e.clientY;
+      mouse.current.y = e.clientY + window.scrollY; 
     };
+
     const handleTouch = (e) => {
       if (!e.touches[0]) return;
       mouse.current.x = e.touches[0].clientX;
-      mouse.current.y = e.touches[0].clientY;
+      mouse.current.y = e.touches[0].clientY + window.scrollY;
     };
+
     const handleResize = () => {
+      const fullHeight = getFullHeight();
       const newDpr = Math.min(window.devicePixelRatio || 1, config.maxDpr);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       canvas.width = window.innerWidth * newDpr;
-      canvas.height = window.innerHeight * newDpr;
+      canvas.height = fullHeight * newDpr;
       canvas.style.width = window.innerWidth + "px";
-      canvas.style.height = window.innerHeight + "px";
+      canvas.style.height = fullHeight + "px";
       ctx.scale(newDpr, newDpr);
     };
 
@@ -146,6 +158,6 @@ export default function Particles({ count = 40 }) {
   }, [count]);
 
   return (
-    <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />
+    <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
   );
 }
