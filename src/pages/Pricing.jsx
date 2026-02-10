@@ -268,16 +268,14 @@ useEffect(() => {
   
   if (cards.length === 0) return;
 
-  // ✅ Kill previous timeline if exists
   if (carouselTimelineRef.current) {
     carouselTimelineRef.current.kill();
   }
 
-  // ✅ Track if component is still mounted
   let isMounted = true;
 
   const animateCard = (cardIndex) => {
-    if (!isMounted) return; // ✅ Check if still mounted
+    if (!isMounted) return;
 
     const card = cards[cardIndex];
     const shimmerOverlay = card.querySelector('.shimmer-overlay');
@@ -340,12 +338,10 @@ useEffect(() => {
         duration: 0.8,
         ease: "power3.in",
         onComplete: () => {
-          if (!isMounted) return; // ✅ Check before recursive call
+          if (!isMounted) return;
           
           const nextIndex = (cardIndex + 1) % features.length;
           setActiveFeatureIndex(nextIndex);
-          
-          // ✅ Update ref before creating new timeline
           const newTimeline = animateCard(nextIndex);
           carouselTimelineRef.current = newTimeline;
         }
@@ -357,16 +353,16 @@ useEffect(() => {
   const initialTimeline = animateCard(0);
   carouselTimelineRef.current = initialTimeline;
 
-  // ✅ Cleanup function
+  
   return () => {
-    isMounted = false; // ✅ Prevent new timelines from being created
+    isMounted = false;
     
     if (carouselTimelineRef.current) {
       carouselTimelineRef.current.kill();
       carouselTimelineRef.current = null;
     }
   };
-}, [features.length]); // Dependencies OK - activeFeatureIndex via state setter
+}, [features.length]);
 
   useEffect(() => {
     const contexts = [];
