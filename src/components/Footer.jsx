@@ -14,7 +14,6 @@ export default function Footer() {
   const socialRef = useRef([]);
   const backgroundPatternRef = useRef(null);
   const topGlowRef = useRef(null);
-  const bottomGlowRef = useRef(null);
   const particlesContainerRef = useRef(null);
   const orbitRingsRef = useRef([]);
 
@@ -116,7 +115,7 @@ export default function Footer() {
           sectionsRef.current,
           socialRef.current,
           topGlowRef.current,
-          bottomGlowRef.current,
+         
         ],
         {
           willChange: "auto",
@@ -344,17 +343,6 @@ export default function Footer() {
           opacity: 0.7,
           scaleX: 1.3,
           duration: 3.5,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-        });
-      }
-
-      if (bottomGlowRef.current) {
-        gsap.to(bottomGlowRef.current, {
-          scaleX: 1.4,
-          opacity: 0.6,
-          duration: 4.5,
           ease: "sine.inOut",
           repeat: -1,
           yoyo: true,
@@ -942,14 +930,6 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <div
-        ref={bottomGlowRef}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4/5 h-20 opacity-40 pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse, ${FOOTER_THEME.accentLight}, ${FOOTER_THEME.accent}, transparent)`,
-          filter: "blur(40px)",
-        }}
-      />
     </footer>
   );
 }
