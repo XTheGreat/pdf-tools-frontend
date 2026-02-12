@@ -1,13 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import gsap from "gsap";
 import { Link } from "react-router-dom";
 import { Zap, Lock, Sparkles } from "lucide-react";
 
+// Device detection utility
+const getDeviceCapability = () => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isLowEnd = isMobile && (
+    navigator.hardwareConcurrency <= 4 || 
+    navigator.deviceMemory <= 4 ||
+    window.innerWidth < 768
+  );
+  return { isLowEnd };
+};
+
 const MagneticCursor = ({ theme }) => {
   const cursorRef = useRef();
   const cursorDotRef = useRef();
+  const { isLowEnd } = useMemo(() => getDeviceCapability(), []);
 
   useEffect(() => {
+    // Skip cursor effects on mobile/low-end devices
+    if (isLowEnd) return;
+
     const cursor = cursorRef.current;
     const cursorDot = cursorDotRef.current;
     
@@ -42,7 +57,7 @@ const MagneticCursor = ({ theme }) => {
       });
     };
     
-    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mousemove', moveCursor, { passive: true });
     
     const interactiveElements = document.querySelectorAll('a, button, [role="button"]');
     interactiveElements.forEach(el => {
@@ -57,7 +72,9 @@ const MagneticCursor = ({ theme }) => {
         el.removeEventListener('mouseleave', shrinkCursor);
       });
     };
-  }, [theme]);
+  }, [theme, isLowEnd]);
+  
+  if (isLowEnd) return null;
   
   return (
     <>
@@ -94,6 +111,9 @@ export default function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
+  const deviceCapability = useMemo(() => getDeviceCapability(), []);
+  const { isLowEnd } = deviceCapability;
+  
   const prefersReducedMotion = useRef(false);
 
   if (particlesRef.current.length === 0) {
@@ -112,16 +132,17 @@ export default function Hero() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    prefersReducedMotion.current = mediaQuery.matches;
+    prefersReducedMotion.current = mediaQuery.matches || isLowEnd;
     
     if (prefersReducedMotion.current) {
       gsap.globalTimeline.timeScale(3);
     }
-  }, []);
+  }, [isLowEnd]);
 
-const getParticleCount = () => {
-  return window.innerWidth < 768 ? 100 : 200; 
-};
+  const getParticleCount = () => {
+    if (isLowEnd) return 20; // Reduced for low-end devices
+    return window.innerWidth < 768 ? 50 : 150; 
+  };
 
   const createParticles = () => {
     const count = getParticleCount();
@@ -138,19 +159,42 @@ const getParticleCount = () => {
   const particlePositions = particlePositionsRef.current;
 
   useEffect(() => {
+    let ticking = false;
+    
     const handleScroll = () => {
-      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = (window.scrollY / totalScroll) * 100;
-      setScrollProgress(Math.min(progress, 100));
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = (window.scrollY / totalScroll) * 100;
+          setScrollProgress(Math.min(progress, 100));
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
     const style = document.createElement("style");
-    style.innerHTML = `
+    
+    // Simplified animations for low-end devices
+    const animations = isLowEnd ? `
+      @keyframes gradient-shift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      @keyframes borderGlow {
+        0%, 100% { 
+          filter: drop-shadow(0 0 5px ${HERO_THEME.accent});
+        }
+        50% { 
+          filter: drop-shadow(0 0 10px ${HERO_THEME.accentLight});
+        }
+      }
+    ` : `
       @keyframes gradient-shift {
         0% { background-position: 0% 50%; }
         25% { background-position: 50% 50%; }
@@ -189,67 +233,85 @@ const getParticleCount = () => {
         }
       }
     `;
+    
+    style.innerHTML = animations;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
-  }, []);
+  }, [isLowEnd]);
 
   useEffect(() => {
+    // Faster loading for low-end devices
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setTimeout(() => setIsLoaded(true), 300);
+          setTimeout(() => setIsLoaded(true), isLowEnd ? 100 : 300);
           return 100;
         }
-        return prev + 2;
+        return prev + (isLowEnd ? 5 : 2);
       });
-    }, 30);
+    }, isLowEnd ? 20 : 30);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isLowEnd]);
 
   useEffect(() => {
-    if (prefersReducedMotion.current) return;
+    if (prefersReducedMotion.current || isLowEnd) return;
     
+    let rafId;
     const handleMouseMove = (e) => {
-      if (ctaButtonRef.current) {
-        const rect = ctaButtonRef.current.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const distance = Math.sqrt(
-          Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
-        );
+      if (rafId) return;
+      
+      rafId = requestAnimationFrame(() => {
+        if (ctaButtonRef.current) {
+          const rect = ctaButtonRef.current.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const distance = Math.sqrt(
+            Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
+          );
 
-        if (distance < 200) {
-          const force = (200 - distance) / 200;
-          const deltaX = (e.clientX - centerX) * force * 0.3;
-          const deltaY = (e.clientY - centerY) * force * 0.3;
+          if (distance < 200) {
+            const force = (200 - distance) / 200;
+            const deltaX = (e.clientX - centerX) * force * 0.3;
+            const deltaY = (e.clientY - centerY) * force * 0.3;
 
-          gsap.to(ctaButtonRef.current, {
-            x: deltaX,
-            y: deltaY,
-            duration: 0.3,
-            ease: "power2.out",
-          });
-        } else {
-          gsap.to(ctaButtonRef.current, {
-            x: 0,
-            y: 0,
-            duration: 0.5,
-            ease: "elastic.out(1, 0.3)",
-          });
+            gsap.to(ctaButtonRef.current, {
+              x: deltaX,
+              y: deltaY,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          } else {
+            gsap.to(ctaButtonRef.current, {
+              x: 0,
+              y: 0,
+              duration: 0.5,
+              ease: "elastic.out(1, 0.3)",
+            });
+          }
         }
-      }
+        rafId = null;
+      });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [isLowEnd]);
 
   useEffect(() => {
     if (!isLoaded || !titleRef.current) return;
 
     const scrambleText = (element, finalText, duration = 2000) => {
+      // Skip scramble effect on low-end devices
+      if (isLowEnd) {
+        element.textContent = finalText;
+        return;
+      }
+      
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
       const length = finalText.length;
       let iteration = 0;
@@ -279,17 +341,23 @@ const getParticleCount = () => {
     const titleSpan = titleRef.current.querySelector("span");
     if (titleSpan) {
       setTimeout(() => {
-        scrambleText(titleSpan, "Using PDF Tools", prefersReducedMotion.current ? 500 : 1500);
-      }, 1000);
+        scrambleText(titleSpan, "Using PDF Tools", isLowEnd ? 0 : 1500);
+      }, isLowEnd ? 100 : 1000);
     }
-  }, [isLoaded]);
+  }, [isLoaded, isLowEnd]);
 
   useEffect(() => {
     if (!isLoaded || !subtitleRef.current) return;
 
     const text = "Transform, convert, and manage your PDF documents with powerful tools. Fast, secure, and incredibly easy to use.";
-    let index = 0;
     
+    // Instant display for low-end devices
+    if (isLowEnd) {
+      subtitleRef.current.textContent = text;
+      return;
+    }
+    
+    let index = 0;
     subtitleRef.current.textContent = "";
     
     const typeInterval = setInterval(() => {
@@ -302,13 +370,13 @@ const getParticleCount = () => {
     }, prefersReducedMotion.current ? 10 : 30);
 
     return () => clearInterval(typeInterval);
-  }, [isLoaded]);
+  }, [isLoaded, isLowEnd]);
 
   useEffect(() => {
     if (!isLoaded) return;
 
     const ctx = gsap.context(() => {
-      const animationDuration = prefersReducedMotion.current ? 0.3 : 1.2;
+      const animationDuration = isLowEnd ? 0.2 : (prefersReducedMotion.current ? 0.3 : 1.2);
       
       gsap.set(titleRef.current, { opacity: 0, y: 50, scale: 0.9 });
       gsap.set(subtitleRef.current, { opacity: 1 });
@@ -325,7 +393,7 @@ const getParticleCount = () => {
         }
       });
 
-      const tl = gsap.timeline({ delay: 0.3 });
+      const tl = gsap.timeline({ delay: isLowEnd ? 0.1 : 0.3 });
 
       tl.to(titleRef.current, {
         opacity: 1,
@@ -340,13 +408,14 @@ const getParticleCount = () => {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: prefersReducedMotion.current ? 0.3 : 0.6,
+            duration: isLowEnd ? 0.2 : 0.6,
             ease: "back.out(1.7)",
           },
           "-=0.4"
         );
 
-      if (!prefersReducedMotion.current) {
+      // Skip text shadow animation on low-end devices
+      if (!prefersReducedMotion.current && !isLowEnd) {
         gsap.to(titleRef.current, {
           textShadow: `0 0 40px ${HERO_THEME.glow}, 0 0 80px ${HERO_THEME.glow}`,
           duration: 2,
@@ -356,32 +425,34 @@ const getParticleCount = () => {
         });
       }
 
-      particlesRef.current.filter(Boolean).forEach((particle, index) => {
-        const pos = particlePositions[index];
-        gsap.to(particle, {
-          y: -100,
-          opacity: 0,
-          duration: prefersReducedMotion.current ? pos.duration / 2 : pos.duration,
-          ease: "none",
-          repeat: -1,
-          delay: pos.delay,
+      // Reduced particle animations for low-end devices
+      if (!isLowEnd) {
+        particlesRef.current.filter(Boolean).forEach((particle, index) => {
+          const pos = particlePositions[index];
+          gsap.to(particle, {
+            y: -100,
+            opacity: 0,
+            duration: pos.duration,
+            ease: "none",
+            repeat: -1,
+            delay: pos.delay,
+          });
         });
-      });
+      }
 
-      gsap.delayedCall(prefersReducedMotion.current ? 0.5 : 1.5, () => {
+      gsap.delayedCall(isLowEnd ? 0.2 : 1.5, () => {
         featurePillsRef.current.forEach((pill, index) => {
           if (pill) {
-           const entranceTl = gsap.timeline();
+            const entranceTl = gsap.timeline();
             
-            entranceTl
-              .to(pill, {
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                duration: prefersReducedMotion.current ? 0.3 : 1,
-                ease: "power3.out",
-                delay: prefersReducedMotion.current ? 0 : index * 0.15,
-              })
+            entranceTl.to(pill, {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              duration: isLowEnd ? 0.2 : 1,
+              ease: "power3.out",
+              delay: isLowEnd ? 0 : index * 0.15,
+            });
           }
         });
       });
@@ -389,10 +460,10 @@ const getParticleCount = () => {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [isLoaded, particlePositions]);
+  }, [isLoaded, particlePositions, isLowEnd]);
 
   const handle3DTilt = (e) => {
-    if (!ctaButtonRef.current || prefersReducedMotion.current) return;
+    if (!ctaButtonRef.current || prefersReducedMotion.current || isLowEnd) return;
 
     const rect = ctaButtonRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -412,6 +483,17 @@ const getParticleCount = () => {
   };
 
   const handleCTAClick = (e) => {
+    // Simplified ripple effect for low-end devices
+    if (isLowEnd) {
+      gsap.to(ctaButtonRef.current, {
+        scale: 0.95,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 1,
+      });
+      return;
+    }
+    
     const ripple = document.createElement('div');
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -452,7 +534,7 @@ const getParticleCount = () => {
     if (isEnter) {
       gsap.to(ctaButtonRef.current, {
         scale: 1.05,
-        boxShadow: `0 8px 35px ${HERO_THEME.glow}, 0 0 60px ${HERO_THEME.glow}`,
+        boxShadow: isLowEnd ? `0 4px 15px ${HERO_THEME.glow}` : `0 8px 35px ${HERO_THEME.glow}, 0 0 60px ${HERO_THEME.glow}`,
         duration: 0.3,
         ease: "power2.out",
       });
@@ -486,8 +568,6 @@ const getParticleCount = () => {
     }
   };
 
-
-
   const handlePillHover = (index, isEnter) => {
     const pill = featurePillsRef.current[index];
     if (!pill) return;
@@ -500,53 +580,56 @@ const getParticleCount = () => {
       if (icon) gsap.killTweensOf(icon);
       if (badge) gsap.killTweensOf(badge);
 
-      const ripple = document.createElement("div");
-      ripple.className = "absolute inset-0 rounded-full pointer-events-none";
-      ripple.style.background = `radial-gradient(circle, ${HERO_THEME.accentLight}40 0%, transparent 70%)`;
-      ripple.style.transform = "scale(0)";
-      pill.appendChild(ripple);
+      // Simplified effect for low-end devices
+      if (!isLowEnd) {
+        const ripple = document.createElement("div");
+        ripple.className = "absolute inset-0 rounded-full pointer-events-none";
+        ripple.style.background = `radial-gradient(circle, ${HERO_THEME.accentLight}40 0%, transparent 70%)`;
+        ripple.style.transform = "scale(0)";
+        pill.appendChild(ripple);
 
-      gsap.to(ripple, {
-        scale: 2,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power2.out",
-        onComplete: () => ripple.remove(),
-      });
+        gsap.to(ripple, {
+          scale: 2,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          onComplete: () => ripple.remove(),
+        });
+      }
 
       gsap.to(pill, {
-        scale: 1.15,
-        y: -15,
-        rotationY: 5,
-        rotationX: -5,
+        scale: isLowEnd ? 1.05 : 1.15,
+        y: isLowEnd ? -5 : -15,
+        rotationY: isLowEnd ? 0 : 5,
+        rotationX: isLowEnd ? 0 : -5,
         background: `linear-gradient(135deg, ${HERO_THEME.accent}90, ${HERO_THEME.accentLight}70)`,
         borderColor: `${HERO_THEME.accentLight}`,
-        duration: 0.6,
+        duration: isLowEnd ? 0.2 : 0.6,
         ease: "power2.out",
         overwrite: true,
       });
 
       if (icon) {
         gsap.to(icon, {
-          scale: 1.3,
-          rotation: 360,
-          filter: `drop-shadow(0 0 20px ${HERO_THEME.accentLight}) drop-shadow(0 0 35px ${HERO_THEME.accent})`,
-          duration: 0.6,
+          scale: isLowEnd ? 1.1 : 1.3,
+          rotation: isLowEnd ? 0 : 360,
+          filter: isLowEnd ? `drop-shadow(0 0 10px ${HERO_THEME.accentLight})` : `drop-shadow(0 0 20px ${HERO_THEME.accentLight}) drop-shadow(0 0 35px ${HERO_THEME.accent})`,
+          duration: isLowEnd ? 0.2 : 0.6,
           ease: "back.out(2)",
           overwrite: true,
         });
       }
 
-    if (badge) {
-  gsap.to(badge, {
-    scale: 1.2,
-    rotation: 5,
-    boxShadow: `0 10px 45px rgba(168, 85, 247, 1), 0 0 60px rgba(236, 72, 153, 0.8), 0 0 100px rgba(168, 85, 247, 0.5)`,
-    duration: 0.15,
-    ease: "power1.out",
-    overwrite: true,
-  });
-}
+      if (badge) {
+        gsap.to(badge, {
+          scale: isLowEnd ? 1.05 : 1.2,
+          rotation: isLowEnd ? 0 : 5,
+          boxShadow: isLowEnd ? '0 4px 20px rgba(168, 85, 247, 0.5)' : `0 10px 45px rgba(168, 85, 247, 1), 0 0 60px rgba(236, 72, 153, 0.8), 0 0 100px rgba(168, 85, 247, 0.5)`,
+          duration: 0.15,
+          ease: "power1.out",
+          overwrite: true,
+        });
+      }
     } else {
       gsap.to(pill, {
         scale: 1,
@@ -556,10 +639,9 @@ const getParticleCount = () => {
         boxShadow: `0 4px 25px ${HERO_THEME.glow}, inset 0 1px 0 rgba(255,255,255,0.15)`,
         background: `linear-gradient(135deg, ${HERO_THEME.accent}50, ${HERO_THEME.accentLight}30)`,
         borderColor: `${HERO_THEME.accent}80`,
-        duration: 0.7,
+        duration: isLowEnd ? 0.2 : 0.7,
         ease: "power3.out",
         overwrite: true,
-      
       });
 
       if (icon) {
@@ -567,7 +649,7 @@ const getParticleCount = () => {
           scale: 1,
           rotation: 0,
           filter: `drop-shadow(0 0 8px ${HERO_THEME.accentLight})`,
-          duration: 0.6,
+          duration: isLowEnd ? 0.2 : 0.6,
           ease: "elastic.out(1, 0.5)",
           overwrite: true,
         });
@@ -578,7 +660,7 @@ const getParticleCount = () => {
           scale: 1,
           rotation: 0,
           boxShadow: '0 4px 15px rgba(168, 85, 247, 0.4)',
-          duration: 0.6,
+          duration: isLowEnd ? 0.2 : 0.6,
           ease: "power3.out",
           overwrite: true,
         });
@@ -587,6 +669,8 @@ const getParticleCount = () => {
   };
 
   const handlePillMove = (e, index) => {
+    if (isLowEnd) return; // Skip 3D tilt on low-end devices
+    
     const pill = featurePillsRef.current[index];
     if (!pill || prefersReducedMotion.current) return;
 
@@ -615,7 +699,7 @@ const getParticleCount = () => {
         style={{
           width: `${scrollProgress}%`,
           background: `linear-gradient(90deg, ${HERO_THEME.accent}, ${HERO_THEME.accentLight})`,
-          boxShadow: `0 0 10px ${HERO_THEME.glow}`
+          boxShadow: isLowEnd ? 'none' : `0 0 10px ${HERO_THEME.glow}`
         }}
       />
 
@@ -626,11 +710,11 @@ const getParticleCount = () => {
           <div className="w-64">
             <div className="h-1 bg-white/10 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full"
+                className="h-full rounded-full transition-all"
                 style={{
                   width: `${loadingProgress}%`,
                   background: `linear-gradient(90deg, ${HERO_THEME.accent}, ${HERO_THEME.accentLight})`,
-                  boxShadow: `0 0 20px ${HERO_THEME.glow}`,
+                  boxShadow: isLowEnd ? 'none' : `0 0 20px ${HERO_THEME.glow}`,
                 }}
               />
             </div>
@@ -659,21 +743,24 @@ const getParticleCount = () => {
               )
             `,
             backgroundSize: "400% 400%",
-            animation: "gradient-shift 15s ease infinite",
+            animation: isLowEnd ? "none" : "gradient-shift 15s ease infinite",
             opacity: isLoaded ? 1 : 0,
             transition: "opacity 0.5s"
           }}
         />
 
-        <div
-          className="absolute inset-0 hexagon-glow -z-10"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='56' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3Cpath d='M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3C/svg%3E")`,
-            backgroundSize: "56px 100px",
-            opacity: isLoaded ? 0.07 : 0,
-            animation: "hexagon-rainbow 8s ease-in-out infinite"
-          }}
-        />
+        {/* Hide hexagon pattern on low-end devices */}
+        {!isLowEnd && (
+          <div
+            className="absolute inset-0 hexagon-glow -z-10"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='56' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3Cpath d='M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3C/svg%3E")`,
+              backgroundSize: "56px 100px",
+              opacity: isLoaded ? 0.07 : 0,
+              animation: "hexagon-rainbow 8s ease-in-out infinite"
+            }}
+          />
+        )}
 
         <div
           className="absolute inset-0 pointer-events-none -z-10"
@@ -683,15 +770,17 @@ const getParticleCount = () => {
           aria-hidden="true"
         />
 
+        {/* Simplified grid for low-end devices */}
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0"
           style={{
             backgroundImage: `
               linear-gradient(to right, rgba(79, 70, 229, 0.1) 1px, transparent 1px),
               linear-gradient(to bottom, rgba(79, 70, 229, 0.1) 1px, transparent 1px)
             `,
             backgroundSize: "50px 50px",
-            animation: "gridMove 20s linear infinite",
+            opacity: 0.2,
+            animation: isLowEnd ? "none" : "gridMove 20s linear infinite",
           }}
         />
 
@@ -702,6 +791,7 @@ const getParticleCount = () => {
           }
         `}</style>
 
+        {/* Particles - reduced for low-end */}
         <div className="absolute inset-0 pointer-events-none">
           {particlePositions.map((pos, i) => (
             <div
@@ -712,9 +802,9 @@ const getParticleCount = () => {
                 background: HERO_THEME.accentLight,
                 left: `${pos.left}%`,
                 top: `${pos.top}%`,
-                opacity: 0.6,
-                boxShadow: `0 0 10px ${HERO_THEME.accentLight}`,
-                willChange: 'transform, opacity'
+                opacity: isLowEnd ? 0.3 : 0.6,
+                boxShadow: isLowEnd ? 'none' : `0 0 10px ${HERO_THEME.accentLight}`,
+                willChange: isLowEnd ? 'auto' : 'transform, opacity'
               }}
             />
           ))}
@@ -723,11 +813,10 @@ const getParticleCount = () => {
         <div className="relative py-20 md:py-0 z-10 max-w-5xl mx-auto text-center">
           <h1
             ref={titleRef}
-            
             className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight cursor-default"
             style={{
-              textShadow: `0 0 30px ${HERO_THEME.glow}`,
-              willChange: 'transform'
+              textShadow: isLowEnd ? `0 0 15px ${HERO_THEME.glow}` : `0 0 30px ${HERO_THEME.glow}`,
+              willChange: isLowEnd ? 'auto' : 'transform'
             }}
             role="heading"
             aria-level="1"
@@ -762,8 +851,8 @@ const getParticleCount = () => {
             style={{
               background: `linear-gradient(135deg, ${HERO_THEME.accent}, ${HERO_THEME.accentLight})`,
               boxShadow: `0 6px 25px ${HERO_THEME.glow}`,
-              transformStyle: "preserve-3d",
-              willChange: 'transform'
+              transformStyle: isLowEnd ? "flat" : "preserve-3d",
+              willChange: isLowEnd ? 'auto' : 'transform'
             }}
             role="button"
             aria-label="Get started with PDF tools - Navigate to tools page"
@@ -771,8 +860,8 @@ const getParticleCount = () => {
             <div
               className="absolute inset-0 -translate-x-full group-hover:translate-x-full"
               style={{
-                background:
-                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                transition: isLowEnd ? "transform 0.3s" : "transform 0.6s"
               }}
             />
 
@@ -810,14 +899,14 @@ const getParticleCount = () => {
                 className="px-8 py-4 rounded-full text-white cursor-pointer flex items-center gap-3 relative"
                 style={{
                   background: `rgba(255, 255, 255, 0.05)`,
-                  backdropFilter: 'blur(20px) saturate(180%)',
+                  backdropFilter: isLowEnd ? 'blur(10px)' : 'blur(20px) saturate(180%)',
                   border: `2px solid ${HERO_THEME.accent}80`,
                   boxShadow: `0 4px 30px ${HERO_THEME.glow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  willChange: 'transform',
-                  transformStyle: "preserve-3d",
+                  willChange: isLowEnd ? 'auto' : 'transform',
+                  transformStyle: isLowEnd ? "flat" : "preserve-3d",
                 }}
                 role="listitem"
-                aria-label={`${feature.text}: ${feature.stat} ${feature.description}`}
+                aria-label={`${feature.text}: ${feature.stat}`}
               >
                 <div 
                   className="badge-glow absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full px-2 py-1 text-xs font-bold shadow-lg"
@@ -832,7 +921,7 @@ const getParticleCount = () => {
                   strokeWidth={2.5}
                   style={{
                     filter: `drop-shadow(0 0 8px ${HERO_THEME.accentLight})`,
-                    animation: 'borderGlow 3s ease-in-out infinite'
+                    animation: isLowEnd ? 'none' : 'borderGlow 3s ease-in-out infinite'
                   }}
                   aria-hidden="true"
                 />
@@ -846,19 +935,19 @@ const getParticleCount = () => {
         </div>
 
         <div className="absolute bottom-5 md:bottom-10 left-1/2 -translate-x-1/2" aria-hidden="true">
-          <div className="animate-bounce">
+          <div className={isLowEnd ? "" : "animate-bounce"}>
             <div
               className="w-6 h-10 rounded-full border-2 flex items-start justify-center p-2"
               style={{
                 borderColor: HERO_THEME.accentLight,
-                boxShadow: `0 0 20px ${HERO_THEME.glow}`,
+                boxShadow: isLowEnd ? 'none' : `0 0 20px ${HERO_THEME.glow}`,
               }}
             >
               <div
-                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                className={isLowEnd ? "w-1.5 h-1.5 rounded-full" : "w-1.5 h-1.5 rounded-full animate-pulse"}
                 style={{
                   background: HERO_THEME.accent,
-                  boxShadow: `0 0 10px ${HERO_THEME.glow}`,
+                  boxShadow: isLowEnd ? 'none' : `0 0 10px ${HERO_THEME.glow}`,
                 }}
               />
             </div>

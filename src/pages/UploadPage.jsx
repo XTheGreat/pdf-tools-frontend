@@ -831,19 +831,29 @@ const API_URL = "https://pdf-tools-backend-production-7cec.up.railway.app";
         },
       });
 
-      if (buttonRef.current) {
-        gsap.fromTo(
-          buttonRef.current,
-          { scale: 1 },
-          {
-            scale: 1.08,
-            duration: 0.4,
-            yoyo: true,
-            repeat: 2,
-            ease: "power2.inOut",
-          },
-        );
+if (buttonRef.current) {
+  gsap.fromTo(
+    buttonRef.current,
+    { scale: 1 },
+    {
+      scale: isMobile ? 1.02 : 1.06, // scale sedikit dikurangi
+      duration: 0.6, // durasi lebih lama = lebih smooth
+      yoyo: true,
+      repeat: 2,
+      ease: "sine.inOut", // ease paling smooth
+      onComplete: () => {
+        if (buttonRef.current) {
+          gsap.to(buttonRef.current, {
+            scale: 1,
+            duration: 0.7, // transisi akhir lebih lama
+            ease: "power2.out",
+            clearProps: "transform"
+          });
+        }
       }
+    },
+  );
+}
 
       const downloadBtn = document.querySelector('a[href*="download"]');
       if (downloadBtn) {
