@@ -1385,7 +1385,7 @@ export default function Features() {
                   className="text-sm font-bold"
                   style={{ color: "#43e97b" }}
                 >
-                  All steps done! 🎉
+                  All steps done.
                 </span>
               )}
             </div>
