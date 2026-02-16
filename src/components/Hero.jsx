@@ -1,33 +1,13 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Link } from "react-router-dom";
 import { Zap, Lock, Sparkles } from "lucide-react";
 
-// ✅ FIX 1: Enhanced device detection dengan refresh rate
-const getDeviceCapability = () => {
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const isLowEnd = isMobile && (
-    navigator.hardwareConcurrency <= 4 || 
-    navigator.deviceMemory <= 4 ||
-    window.innerWidth < 768
-  );
-  
-  // ✅ NEW: Detect refresh rate
-  const refreshRate = window.screen?.refreshRate || 60;
-  const speedMultiplier = refreshRate > 60 ? refreshRate / 60 : 1;
-  
-  return { isLowEnd, isMobile, speedMultiplier };
-};
-
 const MagneticCursor = ({ theme }) => {
   const cursorRef = useRef();
   const cursorDotRef = useRef();
-  const { isLowEnd } = useMemo(() => getDeviceCapability(), []);
 
   useEffect(() => {
-    // Skip cursor effects on mobile/low-end devices
-    if (isLowEnd) return;
-
     const cursor = cursorRef.current;
     const cursorDot = cursorDotRef.current;
     
@@ -62,7 +42,7 @@ const MagneticCursor = ({ theme }) => {
       });
     };
     
-    window.addEventListener('mousemove', moveCursor, { passive: true });
+    window.addEventListener('mousemove', moveCursor);
     
     const interactiveElements = document.querySelectorAll('a, button, [role="button"]');
     interactiveElements.forEach(el => {
@@ -77,9 +57,7 @@ const MagneticCursor = ({ theme }) => {
         el.removeEventListener('mouseleave', shrinkCursor);
       });
     };
-  }, [theme, isLowEnd]);
-  
-  if (isLowEnd) return null;
+  }, [theme]);
   
   return (
     <>
@@ -116,10 +94,6 @@ export default function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  // ✅ FIX 2: Get speed multiplier from device capability
-  const deviceCapability = useMemo(() => getDeviceCapability(), []);
-  const { isLowEnd, isMobile, speedMultiplier } = deviceCapability;
-  
   const prefersReducedMotion = useRef(false);
 
   if (particlesRef.current.length === 0) {
@@ -136,22 +110,18 @@ export default function Hero() {
     bg: "rgba(10, 10, 13, 1)",
   };
 
-  // ✅ FIX 3: Force 60 FPS on mount
   useEffect(() => {
-    gsap.ticker.fps(60); // Force consistent FPS
-    
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    prefersReducedMotion.current = mediaQuery.matches || isLowEnd;
+    prefersReducedMotion.current = mediaQuery.matches;
     
     if (prefersReducedMotion.current) {
       gsap.globalTimeline.timeScale(3);
     }
-  }, [isLowEnd]);
+  }, []);
 
-  const getParticleCount = () => {
-    if (isLowEnd) return 20;
-    return window.innerWidth < 768 ? 30 : 100; // Kurangi dari 50→30, 150→100
-  };
+const getParticleCount = () => {
+  return window.innerWidth < 768 ? 100 : 200; 
+};
 
   const createParticles = () => {
     const count = getParticleCount();
@@ -159,8 +129,7 @@ export default function Hero() {
       left: Math.random() * 100,
       top: Math.random() * 100,
       delay: Math.random() * 2,
-      // ✅ FIX 4: Apply speed multiplier ke particle duration
-      duration: (3 + Math.random() * 2) * speedMultiplier,
+      duration: 3 + Math.random() * 2,
     }));
   };
 
@@ -169,47 +138,19 @@ export default function Hero() {
   const particlePositions = particlePositionsRef.current;
 
   useEffect(() => {
-    let ticking = false;
-    
     const handleScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-          const progress = (window.scrollY / totalScroll) * 100;
-          setScrollProgress(Math.min(progress, 100));
-          ticking = false;
-        });
-        ticking = true;
-      }
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / totalScroll) * 100;
+      setScrollProgress(Math.min(progress, 100));
     };
     
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
     const style = document.createElement("style");
-    
-    // ✅ FIX 5: Apply speed multiplier to CSS animations
-    const gradientDuration = 15 * speedMultiplier;
-    const hexagonDuration = 8 * speedMultiplier;
-    const borderGlowDuration = 3 * speedMultiplier;
-    
-    // Simplified animations for low-end devices
-    const animations = isLowEnd ? `
-      @keyframes gradient-shift {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-      }
-      @keyframes borderGlow {
-        0%, 100% { 
-          filter: drop-shadow(0 0 5px ${HERO_THEME.accent});
-        }
-        50% { 
-          filter: drop-shadow(0 0 10px ${HERO_THEME.accentLight});
-        }
-      }
-    ` : `
+    style.innerHTML = `
       @keyframes gradient-shift {
         0% { background-position: 0% 50%; }
         25% { background-position: 50% 50%; }
@@ -247,99 +188,68 @@ export default function Hero() {
           filter: drop-shadow(0 0 20px ${HERO_THEME.accentLight}) drop-shadow(0 0 40px ${HERO_THEME.accent});
         }
       }
-      
-      /* ✅ FIX 6: Add classes with adjusted durations */
-      .gradient-animated {
-        animation: gradient-shift ${gradientDuration}s ease infinite;
-      }
-      
-      .hexagon-animated {
-        animation: hexagon-rainbow ${hexagonDuration}s ease-in-out infinite;
-      }
-      
-      .border-glow-animated {
-        animation: borderGlow ${borderGlowDuration}s ease-in-out infinite;
-      }
     `;
-    
-    style.innerHTML = animations;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
-  }, [isLowEnd, speedMultiplier, HERO_THEME.accent, HERO_THEME.accentLight, HERO_THEME.glow]);
+  }, []);
 
   useEffect(() => {
-    // Faster loading for low-end devices
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setTimeout(() => setIsLoaded(true), isLowEnd ? 100 : 300);
+          setTimeout(() => setIsLoaded(true), 300);
           return 100;
         }
-        return prev + (isLowEnd ? 5 : 2);
+        return prev + 2;
       });
-    }, isLowEnd ? 20 : 30);
+    }, 30);
 
     return () => clearInterval(interval);
-  }, [isLowEnd]);
+  }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion.current || isLowEnd) return;
+    if (prefersReducedMotion.current) return;
     
-    let rafId;
     const handleMouseMove = (e) => {
-      if (rafId) return;
-      
-      rafId = requestAnimationFrame(() => {
-        if (ctaButtonRef.current) {
-          const rect = ctaButtonRef.current.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-          const distance = Math.sqrt(
-            Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
-          );
+      if (ctaButtonRef.current) {
+        const rect = ctaButtonRef.current.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.sqrt(
+          Math.pow(e.clientX - centerX, 2) + Math.pow(e.clientY - centerY, 2)
+        );
 
-          if (distance < 200) {
-            const force = (200 - distance) / 200;
-            const deltaX = (e.clientX - centerX) * force * 0.3;
-            const deltaY = (e.clientY - centerY) * force * 0.3;
+        if (distance < 200) {
+          const force = (200 - distance) / 200;
+          const deltaX = (e.clientX - centerX) * force * 0.3;
+          const deltaY = (e.clientY - centerY) * force * 0.3;
 
-            gsap.to(ctaButtonRef.current, {
-              x: deltaX,
-              y: deltaY,
-              duration: 0.3,
-              ease: "power2.out",
-            });
-          } else {
-            gsap.to(ctaButtonRef.current, {
-              x: 0,
-              y: 0,
-              duration: 0.5,
-              ease: "elastic.out(1, 0.3)",
-            });
-          }
+          gsap.to(ctaButtonRef.current, {
+            x: deltaX,
+            y: deltaY,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        } else {
+          gsap.to(ctaButtonRef.current, {
+            x: 0,
+            y: 0,
+            duration: 0.5,
+            ease: "elastic.out(1, 0.3)",
+          });
         }
-        rafId = null;
-      });
+      }
     };
 
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [isLowEnd]);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   useEffect(() => {
     if (!isLoaded || !titleRef.current) return;
 
     const scrambleText = (element, finalText, duration = 2000) => {
-      // Skip scramble effect on low-end devices
-      if (isLowEnd) {
-        element.textContent = finalText;
-        return;
-      }
-      
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
       const length = finalText.length;
       let iteration = 0;
@@ -369,23 +279,17 @@ export default function Hero() {
     const titleSpan = titleRef.current.querySelector("span");
     if (titleSpan) {
       setTimeout(() => {
-        scrambleText(titleSpan, "Using PDF Tools", isLowEnd ? 0 : 1500);
-      }, isLowEnd ? 100 : 1000);
+        scrambleText(titleSpan, "Using PDF Tools", prefersReducedMotion.current ? 500 : 1500);
+      }, 1000);
     }
-  }, [isLoaded, isLowEnd]);
+  }, [isLoaded]);
 
   useEffect(() => {
     if (!isLoaded || !subtitleRef.current) return;
 
     const text = "Transform, convert, and manage your PDF documents with powerful tools. Fast, secure, and incredibly easy to use.";
-    
-    // Instant display for low-end devices
-    if (isLowEnd) {
-      subtitleRef.current.textContent = text;
-      return;
-    }
-    
     let index = 0;
+    
     subtitleRef.current.textContent = "";
     
     const typeInterval = setInterval(() => {
@@ -398,14 +302,13 @@ export default function Hero() {
     }, prefersReducedMotion.current ? 10 : 30);
 
     return () => clearInterval(typeInterval);
-  }, [isLoaded, isLowEnd]);
+  }, [isLoaded]);
 
   useEffect(() => {
     if (!isLoaded) return;
 
     const ctx = gsap.context(() => {
-      // ✅ FIX 7: Apply speed multiplier to GSAP animations
-      const animationDuration = isLowEnd ? 0.2 : (prefersReducedMotion.current ? 0.3 : 1.2) * speedMultiplier;
+      const animationDuration = prefersReducedMotion.current ? 0.3 : 1.2;
       
       gsap.set(titleRef.current, { opacity: 0, y: 50, scale: 0.9 });
       gsap.set(subtitleRef.current, { opacity: 1 });
@@ -422,7 +325,7 @@ export default function Hero() {
         }
       });
 
-      const tl = gsap.timeline({ delay: (isLowEnd ? 0.1 : 0.3) * speedMultiplier });
+      const tl = gsap.timeline({ delay: 0.3 });
 
       tl.to(titleRef.current, {
         opacity: 1,
@@ -437,51 +340,48 @@ export default function Hero() {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: (isLowEnd ? 0.2 : 0.6) * speedMultiplier,
+            duration: prefersReducedMotion.current ? 0.3 : 0.6,
             ease: "back.out(1.7)",
           },
           "-=0.4"
         );
 
-      // Skip text shadow animation on low-end devices
-      if (!prefersReducedMotion.current && !isLowEnd) {
+      if (!prefersReducedMotion.current) {
         gsap.to(titleRef.current, {
           textShadow: `0 0 40px ${HERO_THEME.glow}, 0 0 80px ${HERO_THEME.glow}`,
-          duration: 2 * speedMultiplier,
+          duration: 2,
           ease: "sine.inOut",
           repeat: -1,
           yoyo: true,
         });
       }
 
-      // Particle animations with speed multiplier
-      if (!isLowEnd) {
-        particlesRef.current.filter(Boolean).forEach((particle, index) => {
-          const pos = particlePositions[index];
-          gsap.to(particle, {
-            y: -100,
-            opacity: 0,
-            duration: pos.duration, // Already adjusted in createParticles
-            ease: "none",
-            repeat: -1,
-            delay: pos.delay,
-          });
+      particlesRef.current.filter(Boolean).forEach((particle, index) => {
+        const pos = particlePositions[index];
+        gsap.to(particle, {
+          y: -100,
+          opacity: 0,
+          duration: prefersReducedMotion.current ? pos.duration / 2 : pos.duration,
+          ease: "none",
+          repeat: -1,
+          delay: pos.delay,
         });
-      }
+      });
 
-      gsap.delayedCall((isLowEnd ? 0.2 : 1.5) * speedMultiplier, () => {
+      gsap.delayedCall(prefersReducedMotion.current ? 0.5 : 1.5, () => {
         featurePillsRef.current.forEach((pill, index) => {
           if (pill) {
-            const entranceTl = gsap.timeline();
+           const entranceTl = gsap.timeline();
             
-            entranceTl.to(pill, {
-              opacity: 1,
-              scale: 1,
-              y: 0,
-              duration: (isLowEnd ? 0.2 : 1) * speedMultiplier,
-              ease: "power3.out",
-              delay: (isLowEnd ? 0 : index * 0.15) * speedMultiplier,
-            });
+            entranceTl
+              .to(pill, {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                duration: prefersReducedMotion.current ? 0.3 : 1,
+                ease: "power3.out",
+                delay: prefersReducedMotion.current ? 0 : index * 0.15,
+              })
           }
         });
       });
@@ -489,10 +389,10 @@ export default function Hero() {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [isLoaded, particlePositions, isLowEnd, speedMultiplier, HERO_THEME.glow]);
+  }, [isLoaded, particlePositions]);
 
   const handle3DTilt = (e) => {
-    if (!ctaButtonRef.current || prefersReducedMotion.current || isLowEnd) return;
+    if (!ctaButtonRef.current || prefersReducedMotion.current) return;
 
     const rect = ctaButtonRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -512,17 +412,6 @@ export default function Hero() {
   };
 
   const handleCTAClick = (e) => {
-    // Simplified ripple effect for low-end devices
-    if (isLowEnd) {
-      gsap.to(ctaButtonRef.current, {
-        scale: 0.95,
-        duration: 0.1,
-        yoyo: true,
-        repeat: 1,
-      });
-      return;
-    }
-    
     const ripple = document.createElement('div');
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -563,7 +452,7 @@ export default function Hero() {
     if (isEnter) {
       gsap.to(ctaButtonRef.current, {
         scale: 1.05,
-        boxShadow: isLowEnd ? `0 4px 15px ${HERO_THEME.glow}` : `0 8px 35px ${HERO_THEME.glow}, 0 0 60px ${HERO_THEME.glow}`,
+        boxShadow: `0 8px 35px ${HERO_THEME.glow}, 0 0 60px ${HERO_THEME.glow}`,
         duration: 0.3,
         ease: "power2.out",
       });
@@ -597,6 +486,8 @@ export default function Hero() {
     }
   };
 
+
+
   const handlePillHover = (index, isEnter) => {
     const pill = featurePillsRef.current[index];
     if (!pill) return;
@@ -609,56 +500,53 @@ export default function Hero() {
       if (icon) gsap.killTweensOf(icon);
       if (badge) gsap.killTweensOf(badge);
 
-      // Simplified effect for low-end devices
-      if (!isLowEnd) {
-        const ripple = document.createElement("div");
-        ripple.className = "absolute inset-0 rounded-full pointer-events-none";
-        ripple.style.background = `radial-gradient(circle, ${HERO_THEME.accentLight}40 0%, transparent 70%)`;
-        ripple.style.transform = "scale(0)";
-        pill.appendChild(ripple);
+      const ripple = document.createElement("div");
+      ripple.className = "absolute inset-0 rounded-full pointer-events-none";
+      ripple.style.background = `radial-gradient(circle, ${HERO_THEME.accentLight}40 0%, transparent 70%)`;
+      ripple.style.transform = "scale(0)";
+      pill.appendChild(ripple);
 
-        gsap.to(ripple, {
-          scale: 2,
-          opacity: 0,
-          duration: 0.8,
-          ease: "power2.out",
-          onComplete: () => ripple.remove(),
-        });
-      }
+      gsap.to(ripple, {
+        scale: 2,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.out",
+        onComplete: () => ripple.remove(),
+      });
 
       gsap.to(pill, {
-        scale: isLowEnd ? 1.05 : 1.15,
-        y: isLowEnd ? -5 : -15,
-        rotationY: isLowEnd ? 0 : 5,
-        rotationX: isLowEnd ? 0 : -5,
+        scale: 1.15,
+        y: -15,
+        rotationY: 5,
+        rotationX: -5,
         background: `linear-gradient(135deg, ${HERO_THEME.accent}90, ${HERO_THEME.accentLight}70)`,
         borderColor: `${HERO_THEME.accentLight}`,
-        duration: isLowEnd ? 0.2 : 0.6,
+        duration: 0.6,
         ease: "power2.out",
         overwrite: true,
       });
 
       if (icon) {
         gsap.to(icon, {
-          scale: isLowEnd ? 1.1 : 1.3,
-          rotation: isLowEnd ? 0 : 360,
-          filter: isLowEnd ? `drop-shadow(0 0 10px ${HERO_THEME.accentLight})` : `drop-shadow(0 0 20px ${HERO_THEME.accentLight}) drop-shadow(0 0 35px ${HERO_THEME.accent})`,
-          duration: isLowEnd ? 0.2 : 0.6,
+          scale: 1.3,
+          rotation: 360,
+          filter: `drop-shadow(0 0 20px ${HERO_THEME.accentLight}) drop-shadow(0 0 35px ${HERO_THEME.accent})`,
+          duration: 0.6,
           ease: "back.out(2)",
           overwrite: true,
         });
       }
 
-      if (badge) {
-        gsap.to(badge, {
-          scale: isLowEnd ? 1.05 : 1.2,
-          rotation: isLowEnd ? 0 : 5,
-          boxShadow: isLowEnd ? '0 4px 20px rgba(168, 85, 247, 0.5)' : `0 10px 45px rgba(168, 85, 247, 1), 0 0 60px rgba(236, 72, 153, 0.8), 0 0 100px rgba(168, 85, 247, 0.5)`,
-          duration: 0.15,
-          ease: "power1.out",
-          overwrite: true,
-        });
-      }
+    if (badge) {
+  gsap.to(badge, {
+    scale: 1.2,
+    rotation: 5,
+    boxShadow: `0 10px 45px rgba(168, 85, 247, 1), 0 0 60px rgba(236, 72, 153, 0.8), 0 0 100px rgba(168, 85, 247, 0.5)`,
+    duration: 0.15,
+    ease: "power1.out",
+    overwrite: true,
+  });
+}
     } else {
       gsap.to(pill, {
         scale: 1,
@@ -668,9 +556,10 @@ export default function Hero() {
         boxShadow: `0 4px 25px ${HERO_THEME.glow}, inset 0 1px 0 rgba(255,255,255,0.15)`,
         background: `linear-gradient(135deg, ${HERO_THEME.accent}50, ${HERO_THEME.accentLight}30)`,
         borderColor: `${HERO_THEME.accent}80`,
-        duration: isLowEnd ? 0.2 : 0.7,
+        duration: 0.7,
         ease: "power3.out",
         overwrite: true,
+      
       });
 
       if (icon) {
@@ -678,7 +567,7 @@ export default function Hero() {
           scale: 1,
           rotation: 0,
           filter: `drop-shadow(0 0 8px ${HERO_THEME.accentLight})`,
-          duration: isLowEnd ? 0.2 : 0.6,
+          duration: 0.6,
           ease: "elastic.out(1, 0.5)",
           overwrite: true,
         });
@@ -689,7 +578,7 @@ export default function Hero() {
           scale: 1,
           rotation: 0,
           boxShadow: '0 4px 15px rgba(168, 85, 247, 0.4)',
-          duration: isLowEnd ? 0.2 : 0.6,
+          duration: 0.6,
           ease: "power3.out",
           overwrite: true,
         });
@@ -698,8 +587,6 @@ export default function Hero() {
   };
 
   const handlePillMove = (e, index) => {
-    if (isLowEnd) return; // Skip 3D tilt on low-end devices
-    
     const pill = featurePillsRef.current[index];
     if (!pill || prefersReducedMotion.current) return;
 
@@ -728,7 +615,7 @@ export default function Hero() {
         style={{
           width: `${scrollProgress}%`,
           background: `linear-gradient(90deg, ${HERO_THEME.accent}, ${HERO_THEME.accentLight})`,
-          boxShadow: isLowEnd ? 'none' : `0 0 10px ${HERO_THEME.glow}`
+          boxShadow: `0 0 10px ${HERO_THEME.glow}`
         }}
       />
 
@@ -739,11 +626,11 @@ export default function Hero() {
           <div className="w-64">
             <div className="h-1 bg-white/10 rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full transition-all"
+                className="h-full rounded-full"
                 style={{
                   width: `${loadingProgress}%`,
                   background: `linear-gradient(90deg, ${HERO_THEME.accent}, ${HERO_THEME.accentLight})`,
-                  boxShadow: isLowEnd ? 'none' : `0 0 20px ${HERO_THEME.glow}`,
+                  boxShadow: `0 0 20px ${HERO_THEME.glow}`,
                 }}
               />
             </div>
@@ -758,9 +645,8 @@ export default function Hero() {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden px-6"
       >
-        {/* ✅ FIX 8: Apply classes with adjusted animation durations */}
         <div
-          className={`absolute inset-0 -z-10 ${isLowEnd ? '' : 'gradient-animated'}`}
+          className="absolute inset-0 -z-10"
           style={{
             background: `
               linear-gradient(
@@ -773,22 +659,21 @@ export default function Hero() {
               )
             `,
             backgroundSize: "400% 400%",
+            animation: "gradient-shift 15s ease infinite",
             opacity: isLoaded ? 1 : 0,
             transition: "opacity 0.5s"
           }}
         />
 
-        {/* Hide hexagon pattern on low-end devices */}
-        {!isLowEnd && (
-          <div
-            className={`absolute inset-0 hexagon-glow -z-10 hexagon-animated`}
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='56' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3Cpath d='M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3C/svg%3E")`,
-              backgroundSize: "56px 100px",
-              opacity: isLoaded ? 0.07 : 0,
-            }}
-          />
-        )}
+        <div
+          className="absolute inset-0 hexagon-glow -z-10"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='56' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3Cpath d='M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3C/svg%3E")`,
+            backgroundSize: "56px 100px",
+            opacity: isLoaded ? 0.07 : 0,
+            animation: "hexagon-rainbow 8s ease-in-out infinite"
+          }}
+        />
 
         <div
           className="absolute inset-0 pointer-events-none -z-10"
@@ -798,17 +683,15 @@ export default function Hero() {
           aria-hidden="true"
         />
 
-        {/* Simplified grid for low-end devices */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: `
               linear-gradient(to right, rgba(79, 70, 229, 0.1) 1px, transparent 1px),
               linear-gradient(to bottom, rgba(79, 70, 229, 0.1) 1px, transparent 1px)
             `,
             backgroundSize: "50px 50px",
-            opacity: 0.2,
-            animation: isLowEnd ? "none" : "gridMove 20s linear infinite",
+            animation: "gridMove 20s linear infinite",
           }}
         />
 
@@ -819,7 +702,6 @@ export default function Hero() {
           }
         `}</style>
 
-        {/* ✅ FIX 9: Remove willChange from particles */}
         <div className="absolute inset-0 pointer-events-none">
           {particlePositions.map((pos, i) => (
             <div
@@ -830,9 +712,9 @@ export default function Hero() {
                 background: HERO_THEME.accentLight,
                 left: `${pos.left}%`,
                 top: `${pos.top}%`,
-                opacity: isLowEnd ? 0.3 : 0.6,
-                boxShadow: isLowEnd ? 'none' : `0 0 10px ${HERO_THEME.accentLight}`,
-                // ❌ REMOVED: willChange: isLowEnd ? 'auto' : 'transform, opacity'
+                opacity: 0.6,
+                boxShadow: `0 0 10px ${HERO_THEME.accentLight}`,
+                willChange: 'transform, opacity'
               }}
             />
           ))}
@@ -841,10 +723,11 @@ export default function Hero() {
         <div className="relative py-20 md:py-0 z-10 max-w-5xl mx-auto text-center">
           <h1
             ref={titleRef}
+            
             className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight cursor-default"
             style={{
-              textShadow: isLowEnd ? `0 0 15px ${HERO_THEME.glow}` : `0 0 30px ${HERO_THEME.glow}`,
-              // ❌ REMOVED: willChange: isLowEnd ? 'auto' : 'transform'
+              textShadow: `0 0 30px ${HERO_THEME.glow}`,
+              willChange: 'transform'
             }}
             role="heading"
             aria-level="1"
@@ -879,8 +762,8 @@ export default function Hero() {
             style={{
               background: `linear-gradient(135deg, ${HERO_THEME.accent}, ${HERO_THEME.accentLight})`,
               boxShadow: `0 6px 25px ${HERO_THEME.glow}`,
-              transformStyle: isLowEnd ? "flat" : "preserve-3d",
-              // ❌ REMOVED: willChange: isLowEnd ? 'auto' : 'transform'
+              transformStyle: "preserve-3d",
+              willChange: 'transform'
             }}
             role="button"
             aria-label="Get started with PDF tools - Navigate to tools page"
@@ -888,8 +771,8 @@ export default function Hero() {
             <div
               className="absolute inset-0 -translate-x-full group-hover:translate-x-full"
               style={{
-                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
-                transition: isLowEnd ? "transform 0.3s" : "transform 0.6s"
+                background:
+                  "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
               }}
             />
 
@@ -927,14 +810,14 @@ export default function Hero() {
                 className="px-8 py-4 rounded-full text-white cursor-pointer flex items-center gap-3 relative"
                 style={{
                   background: `rgba(255, 255, 255, 0.05)`,
-                  backdropFilter: isLowEnd ? 'blur(10px)' : 'blur(20px) saturate(180%)',
+                  backdropFilter: 'blur(20px) saturate(180%)',
                   border: `2px solid ${HERO_THEME.accent}80`,
                   boxShadow: `0 4px 30px ${HERO_THEME.glow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  // ❌ REMOVED: willChange: isLowEnd ? 'auto' : 'transform',
-                  transformStyle: isLowEnd ? "flat" : "preserve-3d",
+                  willChange: 'transform',
+                  transformStyle: "preserve-3d",
                 }}
                 role="listitem"
-                aria-label={`${feature.text}: ${feature.stat}`}
+                aria-label={`${feature.text}: ${feature.stat} ${feature.description}`}
               >
                 <div 
                   className="badge-glow absolute -top-2 -right-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full px-2 py-1 text-xs font-bold shadow-lg"
@@ -945,10 +828,11 @@ export default function Hero() {
                   {feature.stat}
                 </div>
                 <feature.Icon 
-                  className={`w-6 h-6 ${isLowEnd ? '' : 'border-glow-animated'}`}
+                  className="w-6 h-6" 
                   strokeWidth={2.5}
                   style={{
                     filter: `drop-shadow(0 0 8px ${HERO_THEME.accentLight})`,
+                    animation: 'borderGlow 3s ease-in-out infinite'
                   }}
                   aria-hidden="true"
                 />
@@ -962,19 +846,19 @@ export default function Hero() {
         </div>
 
         <div className="absolute bottom-5 md:bottom-10 left-1/2 -translate-x-1/2" aria-hidden="true">
-          <div className={isLowEnd ? "" : "animate-bounce"}>
+          <div className="animate-bounce">
             <div
               className="w-6 h-10 rounded-full border-2 flex items-start justify-center p-2"
               style={{
                 borderColor: HERO_THEME.accentLight,
-                boxShadow: isLowEnd ? 'none' : `0 0 20px ${HERO_THEME.glow}`,
+                boxShadow: `0 0 20px ${HERO_THEME.glow}`,
               }}
             >
               <div
-                className={isLowEnd ? "w-1.5 h-1.5 rounded-full" : "w-1.5 h-1.5 rounded-full animate-pulse"}
+                className="w-1.5 h-1.5 rounded-full animate-pulse"
                 style={{
                   background: HERO_THEME.accent,
-                  boxShadow: isLowEnd ? 'none' : `0 0 10px ${HERO_THEME.glow}`,
+                  boxShadow: `0 0 10px ${HERO_THEME.glow}`,
                 }}
               />
             </div>
