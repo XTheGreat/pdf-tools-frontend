@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { Link } from "react-router-dom";
 import { Zap, Lock, Sparkles } from "lucide-react";
 
-// Device detection utility
+// ✅ FIX 1: Enhanced device detection dengan refresh rate
 const getDeviceCapability = () => {
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const isLowEnd = isMobile && (
@@ -11,7 +11,12 @@ const getDeviceCapability = () => {
     navigator.deviceMemory <= 4 ||
     window.innerWidth < 768
   );
-  return { isLowEnd };
+  
+  // ✅ NEW: Detect refresh rate
+  const refreshRate = window.screen?.refreshRate || 60;
+  const speedMultiplier = refreshRate > 60 ? refreshRate / 60 : 1;
+  
+  return { isLowEnd, isMobile, speedMultiplier };
 };
 
 const MagneticCursor = ({ theme }) => {
@@ -111,8 +116,9 @@ export default function Hero() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
+  // ✅ FIX 2: Get speed multiplier from device capability
   const deviceCapability = useMemo(() => getDeviceCapability(), []);
-  const { isLowEnd } = deviceCapability;
+  const { isLowEnd, isMobile, speedMultiplier } = deviceCapability;
   
   const prefersReducedMotion = useRef(false);
 
@@ -130,7 +136,10 @@ export default function Hero() {
     bg: "rgba(10, 10, 13, 1)",
   };
 
+  // ✅ FIX 3: Force 60 FPS on mount
   useEffect(() => {
+    gsap.ticker.fps(60); // Force consistent FPS
+    
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     prefersReducedMotion.current = mediaQuery.matches || isLowEnd;
     
@@ -140,8 +149,8 @@ export default function Hero() {
   }, [isLowEnd]);
 
   const getParticleCount = () => {
-    if (isLowEnd) return 20; // Reduced for low-end devices
-    return window.innerWidth < 768 ? 50 : 150; 
+    if (isLowEnd) return 20;
+    return window.innerWidth < 768 ? 30 : 100; // Kurangi dari 50→30, 150→100
   };
 
   const createParticles = () => {
@@ -150,7 +159,8 @@ export default function Hero() {
       left: Math.random() * 100,
       top: Math.random() * 100,
       delay: Math.random() * 2,
-      duration: 3 + Math.random() * 2,
+      // ✅ FIX 4: Apply speed multiplier ke particle duration
+      duration: (3 + Math.random() * 2) * speedMultiplier,
     }));
   };
 
@@ -179,6 +189,11 @@ export default function Hero() {
 
   useEffect(() => {
     const style = document.createElement("style");
+    
+    // ✅ FIX 5: Apply speed multiplier to CSS animations
+    const gradientDuration = 15 * speedMultiplier;
+    const hexagonDuration = 8 * speedMultiplier;
+    const borderGlowDuration = 3 * speedMultiplier;
     
     // Simplified animations for low-end devices
     const animations = isLowEnd ? `
@@ -232,12 +247,25 @@ export default function Hero() {
           filter: drop-shadow(0 0 20px ${HERO_THEME.accentLight}) drop-shadow(0 0 40px ${HERO_THEME.accent});
         }
       }
+      
+      /* ✅ FIX 6: Add classes with adjusted durations */
+      .gradient-animated {
+        animation: gradient-shift ${gradientDuration}s ease infinite;
+      }
+      
+      .hexagon-animated {
+        animation: hexagon-rainbow ${hexagonDuration}s ease-in-out infinite;
+      }
+      
+      .border-glow-animated {
+        animation: borderGlow ${borderGlowDuration}s ease-in-out infinite;
+      }
     `;
     
     style.innerHTML = animations;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
-  }, [isLowEnd]);
+  }, [isLowEnd, speedMultiplier, HERO_THEME.accent, HERO_THEME.accentLight, HERO_THEME.glow]);
 
   useEffect(() => {
     // Faster loading for low-end devices
@@ -376,7 +404,8 @@ export default function Hero() {
     if (!isLoaded) return;
 
     const ctx = gsap.context(() => {
-      const animationDuration = isLowEnd ? 0.2 : (prefersReducedMotion.current ? 0.3 : 1.2);
+      // ✅ FIX 7: Apply speed multiplier to GSAP animations
+      const animationDuration = isLowEnd ? 0.2 : (prefersReducedMotion.current ? 0.3 : 1.2) * speedMultiplier;
       
       gsap.set(titleRef.current, { opacity: 0, y: 50, scale: 0.9 });
       gsap.set(subtitleRef.current, { opacity: 1 });
@@ -393,7 +422,7 @@ export default function Hero() {
         }
       });
 
-      const tl = gsap.timeline({ delay: isLowEnd ? 0.1 : 0.3 });
+      const tl = gsap.timeline({ delay: (isLowEnd ? 0.1 : 0.3) * speedMultiplier });
 
       tl.to(titleRef.current, {
         opacity: 1,
@@ -408,7 +437,7 @@ export default function Hero() {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: isLowEnd ? 0.2 : 0.6,
+            duration: (isLowEnd ? 0.2 : 0.6) * speedMultiplier,
             ease: "back.out(1.7)",
           },
           "-=0.4"
@@ -418,21 +447,21 @@ export default function Hero() {
       if (!prefersReducedMotion.current && !isLowEnd) {
         gsap.to(titleRef.current, {
           textShadow: `0 0 40px ${HERO_THEME.glow}, 0 0 80px ${HERO_THEME.glow}`,
-          duration: 2,
+          duration: 2 * speedMultiplier,
           ease: "sine.inOut",
           repeat: -1,
           yoyo: true,
         });
       }
 
-      // Reduced particle animations for low-end devices
+      // Particle animations with speed multiplier
       if (!isLowEnd) {
         particlesRef.current.filter(Boolean).forEach((particle, index) => {
           const pos = particlePositions[index];
           gsap.to(particle, {
             y: -100,
             opacity: 0,
-            duration: pos.duration,
+            duration: pos.duration, // Already adjusted in createParticles
             ease: "none",
             repeat: -1,
             delay: pos.delay,
@@ -440,7 +469,7 @@ export default function Hero() {
         });
       }
 
-      gsap.delayedCall(isLowEnd ? 0.2 : 1.5, () => {
+      gsap.delayedCall((isLowEnd ? 0.2 : 1.5) * speedMultiplier, () => {
         featurePillsRef.current.forEach((pill, index) => {
           if (pill) {
             const entranceTl = gsap.timeline();
@@ -449,9 +478,9 @@ export default function Hero() {
               opacity: 1,
               scale: 1,
               y: 0,
-              duration: isLowEnd ? 0.2 : 1,
+              duration: (isLowEnd ? 0.2 : 1) * speedMultiplier,
               ease: "power3.out",
-              delay: isLowEnd ? 0 : index * 0.15,
+              delay: (isLowEnd ? 0 : index * 0.15) * speedMultiplier,
             });
           }
         });
@@ -460,7 +489,7 @@ export default function Hero() {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [isLoaded, particlePositions, isLowEnd]);
+  }, [isLoaded, particlePositions, isLowEnd, speedMultiplier, HERO_THEME.glow]);
 
   const handle3DTilt = (e) => {
     if (!ctaButtonRef.current || prefersReducedMotion.current || isLowEnd) return;
@@ -729,8 +758,9 @@ export default function Hero() {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden px-6"
       >
+        {/* ✅ FIX 8: Apply classes with adjusted animation durations */}
         <div
-          className="absolute inset-0 -z-10"
+          className={`absolute inset-0 -z-10 ${isLowEnd ? '' : 'gradient-animated'}`}
           style={{
             background: `
               linear-gradient(
@@ -743,7 +773,6 @@ export default function Hero() {
               )
             `,
             backgroundSize: "400% 400%",
-            animation: isLowEnd ? "none" : "gradient-shift 15s ease infinite",
             opacity: isLoaded ? 1 : 0,
             transition: "opacity 0.5s"
           }}
@@ -752,12 +781,11 @@ export default function Hero() {
         {/* Hide hexagon pattern on low-end devices */}
         {!isLowEnd && (
           <div
-            className="absolute inset-0 hexagon-glow -z-10"
+            className={`absolute inset-0 hexagon-glow -z-10 hexagon-animated`}
             style={{
               backgroundImage: `url("data:image/svg+xml,%3Csvg width='56' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3Cpath d='M28 0L28 34L0 50L0 84L28 100L56 84L56 50L28 34' fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='2'/%3E%3C/svg%3E")`,
               backgroundSize: "56px 100px",
               opacity: isLoaded ? 0.07 : 0,
-              animation: "hexagon-rainbow 8s ease-in-out infinite"
             }}
           />
         )}
@@ -791,7 +819,7 @@ export default function Hero() {
           }
         `}</style>
 
-        {/* Particles - reduced for low-end */}
+        {/* ✅ FIX 9: Remove willChange from particles */}
         <div className="absolute inset-0 pointer-events-none">
           {particlePositions.map((pos, i) => (
             <div
@@ -804,7 +832,7 @@ export default function Hero() {
                 top: `${pos.top}%`,
                 opacity: isLowEnd ? 0.3 : 0.6,
                 boxShadow: isLowEnd ? 'none' : `0 0 10px ${HERO_THEME.accentLight}`,
-                willChange: isLowEnd ? 'auto' : 'transform, opacity'
+                // ❌ REMOVED: willChange: isLowEnd ? 'auto' : 'transform, opacity'
               }}
             />
           ))}
@@ -816,7 +844,7 @@ export default function Hero() {
             className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight cursor-default"
             style={{
               textShadow: isLowEnd ? `0 0 15px ${HERO_THEME.glow}` : `0 0 30px ${HERO_THEME.glow}`,
-              willChange: isLowEnd ? 'auto' : 'transform'
+              // ❌ REMOVED: willChange: isLowEnd ? 'auto' : 'transform'
             }}
             role="heading"
             aria-level="1"
@@ -852,7 +880,7 @@ export default function Hero() {
               background: `linear-gradient(135deg, ${HERO_THEME.accent}, ${HERO_THEME.accentLight})`,
               boxShadow: `0 6px 25px ${HERO_THEME.glow}`,
               transformStyle: isLowEnd ? "flat" : "preserve-3d",
-              willChange: isLowEnd ? 'auto' : 'transform'
+              // ❌ REMOVED: willChange: isLowEnd ? 'auto' : 'transform'
             }}
             role="button"
             aria-label="Get started with PDF tools - Navigate to tools page"
@@ -902,7 +930,7 @@ export default function Hero() {
                   backdropFilter: isLowEnd ? 'blur(10px)' : 'blur(20px) saturate(180%)',
                   border: `2px solid ${HERO_THEME.accent}80`,
                   boxShadow: `0 4px 30px ${HERO_THEME.glow}, inset 0 1px 0 rgba(255,255,255,0.2)`,
-                  willChange: isLowEnd ? 'auto' : 'transform',
+                  // ❌ REMOVED: willChange: isLowEnd ? 'auto' : 'transform',
                   transformStyle: isLowEnd ? "flat" : "preserve-3d",
                 }}
                 role="listitem"
@@ -917,11 +945,10 @@ export default function Hero() {
                   {feature.stat}
                 </div>
                 <feature.Icon 
-                  className="w-6 h-6" 
+                  className={`w-6 h-6 ${isLowEnd ? '' : 'border-glow-animated'}`}
                   strokeWidth={2.5}
                   style={{
                     filter: `drop-shadow(0 0 8px ${HERO_THEME.accentLight})`,
-                    animation: isLowEnd ? 'none' : 'borderGlow 3s ease-in-out infinite'
                   }}
                   aria-hidden="true"
                 />

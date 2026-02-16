@@ -1224,8 +1224,7 @@ export default function Features() {
           </div>
         </div>
 
-
-      {/* ─── Timeline Section ─── */}
+        {/* ─── Timeline Section ─── */}
 
         <div
           className="absolute inset-0 pointer-events-none -z-10"
@@ -1272,16 +1271,22 @@ export default function Features() {
                   </span>
                 ))}
               </span>{" "}
-              <span
-                className="inline-block bg-clip-text text-transparent"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${FEATURES_THEME.accent}, ${FEATURES_THEME.accentLight})`,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                Works
-              </span>
+              <span className="inline-block">
+                {"Works".split("").map((letter, i) => (
+                  <span
+                    key={i}
+                    className={`letter-glow-${i} inline-block`}
+                    style={{
+                      backgroundImage: `linear-gradient(135deg, ${FEATURES_THEME.accent}, ${FEATURES_THEME.accentLight})`,
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      display: letter === " " ? "inline" : "inline-block",
+                    }}
+                  >
+                    {letter === " " ? "\u00A0" : letter}
+                  </span>
+                ))}
+              </span>{" "}
             </h2>
 
             <p
@@ -1296,8 +1301,6 @@ export default function Features() {
           {/* ─── Desktop Timeline (horizontal) ─── */}
           <div className="hidden md:block">
             <div className="relative flex items-start justify-between gap-0">
-              
-
               {timelineSteps.map((step, index) => {
                 const IconComponent = step.icon;
                 const isActive = activeStep === index;
@@ -1587,7 +1590,7 @@ export default function Features() {
                 style={{ background: "rgba(129,140,248,0.12)" }}
               >
                 <div
-                  className="h-full rounded-full transition-all duration-700 ease-out"
+                  className="h-full rounded-full ease-out"
                   style={{
                     width: `${(completedSteps.length / timelineSteps.length) * 100}%`,
                     background:
@@ -1600,7 +1603,10 @@ export default function Features() {
                 />
               </div>
               {completedSteps.length === timelineSteps.length && (
-                <span className="text-sm font-bold" style={{ color: "#43e97b" }}>
+                <span
+                  className="text-sm font-bold"
+                  style={{ color: "#43e97b" }}
+                >
                   All steps done!
                 </span>
               )}
@@ -1609,8 +1615,6 @@ export default function Features() {
 
           {/* ─── Mobile Timeline (vertical) ─── */}
           <div className="md:hidden relative">
-          
-
             <div className="flex flex-col gap-6">
               {timelineSteps.map((step, index) => {
                 const IconComponent = step.icon;
@@ -1647,7 +1651,6 @@ export default function Features() {
                             <path
                               d="M1.5 4l1.5 1.5 3.5-3.5"
                               stroke="white"
-
                               strokeWidth="1.5"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -1754,7 +1757,7 @@ export default function Features() {
                 style={{ background: "rgba(129,140,248,0.1)" }}
               >
                 <div
-                  className="h-full rounded-full transition-all duration-700 ease-out"
+                  className="h-full rounded-full ease-out"
                   style={{
                     width: `${(completedSteps.length / timelineSteps.length) * 100}%`,
                     background: "linear-gradient(90deg, #667eea, #818cf8)",
@@ -1826,9 +1829,7 @@ export default function Features() {
             </div>
           </div>
         </div>
-    
       </section>
-
     </>
   );
 }
