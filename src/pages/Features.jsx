@@ -1621,7 +1621,7 @@ export default function Features() {
                   <div key={index} className="relative flex gap-6 items-start">
                     {index < timelineSteps.length - 1 && (
                       <div
-                        className="absolute left-[30px] top-[58px] w-[2px] h-[calc(100%+8px)] -z-0"
+                        className="absolute left-[30px] top-[40px] w-[2px] h-[calc(100%+20px)] -z-0"
                         style={{
                           background: isDone
                             ? `linear-gradient(180deg, ${step.color}60, ${timelineSteps[index + 1].color}30)`
@@ -1647,6 +1647,7 @@ export default function Features() {
                             <path
                               d="M1.5 4l1.5 1.5 3.5-3.5"
                               stroke="white"
+
                               strokeWidth="1.5"
                               strokeLinecap="round"
                               strokeLinejoin="round"
