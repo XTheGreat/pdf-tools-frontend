@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { FileText, Combine, Scissors, Lock, Image, Edit3, Upload, Wand2, Download, CheckCircle2 } from "lucide-react";
+import {
+  FileText,
+  Combine,
+  Scissors,
+  Lock,
+  Image,
+  Edit3,
+  Upload,
+  Wand2,
+  Download,
+  CheckCircle2,
+} from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,7 +35,6 @@ export default function Features() {
   const connectorRefs = useRef([]);
   const [activeStep, setActiveStep] = useState(null);
   const [completedSteps, setCompletedSteps] = useState([]);
-  const stepParticlesRef = useRef([]);
 
   const FEATURES_THEME = {
     glow: "rgba(79, 70, 229, 0.4)",
@@ -37,7 +47,8 @@ export default function Features() {
     {
       icon: FileText,
       title: "PDF to Word",
-      description: "Convert your PDF documents to editable Word files with perfect formatting preservation.",
+      description:
+        "Convert your PDF documents to editable Word files with perfect formatting preservation.",
       gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       glowColor: "rgba(102, 126, 234, 0.5)",
       delay: 0,
@@ -47,7 +58,8 @@ export default function Features() {
     {
       icon: Combine,
       title: "Merge PDFs",
-      description: "Combine multiple PDF files into one document seamlessly with drag-and-drop interface.",
+      description:
+        "Combine multiple PDF files into one document seamlessly with drag-and-drop interface.",
       gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
       glowColor: "rgba(240, 147, 251, 0.5)",
       delay: 0.1,
@@ -57,7 +69,8 @@ export default function Features() {
     {
       icon: Scissors,
       title: "Split PDF",
-      description: "Extract specific pages or split your PDF into multiple documents effortlessly.",
+      description:
+        "Extract specific pages or split your PDF into multiple documents effortlessly.",
       gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
       glowColor: "rgba(79, 172, 254, 0.5)",
       delay: 0.2,
@@ -67,7 +80,8 @@ export default function Features() {
     {
       icon: Lock,
       title: "Secure PDF",
-      description: "Add password protection and encryption to keep your documents safe and private.",
+      description:
+        "Add password protection and encryption to keep your documents safe and private.",
       gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
       glowColor: "rgba(67, 233, 123, 0.5)",
       delay: 0.3,
@@ -77,7 +91,8 @@ export default function Features() {
     {
       icon: Image,
       title: "PDF to Image",
-      description: "Convert PDF pages to high-quality images in PNG, JPG, or other formats.",
+      description:
+        "Convert PDF pages to high-quality images in PNG, JPG, or other formats.",
       gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
       glowColor: "rgba(250, 112, 154, 0.5)",
       delay: 0.4,
@@ -87,7 +102,8 @@ export default function Features() {
     {
       icon: Edit3,
       title: "Edit PDF",
-      description: "Add text, images, and annotations to your PDF files with our intuitive editor.",
+      description:
+        "Add text, images, and annotations to your PDF files with our intuitive editor.",
       gradient: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
       glowColor: "rgba(48, 207, 208, 0.5)",
       delay: 0.5,
@@ -101,7 +117,8 @@ export default function Features() {
       icon: Upload,
       step: "01",
       title: "Upload Your File",
-      description: "Drag & drop or browse to upload your PDF. Supports files up to 2GB with instant cloud storage.",
+      description:
+        "Drag & drop or browse to upload your PDF. Supports files up to 2GB with instant cloud storage.",
       color: "#667eea",
       gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       glowColor: "rgba(102, 126, 234, 0.5)",
@@ -112,7 +129,8 @@ export default function Features() {
       icon: Wand2,
       step: "02",
       title: "Choose Your Tool",
-      description: "Pick from 20+ powerful PDF tools. Convert, merge, split, compress, sign — everything in one place.",
+      description:
+        "Pick from 20+ powerful PDF tools. Convert, merge, split, compress, sign — everything in one place.",
       color: "#f093fb",
       gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
       glowColor: "rgba(240, 147, 251, 0.5)",
@@ -123,7 +141,8 @@ export default function Features() {
       icon: Edit3,
       step: "03",
       title: "Customize & Preview",
-      description: "Fine-tune your settings and preview results in real-time before applying any changes.",
+      description:
+        "Fine-tune your settings and preview results in real-time before applying any changes.",
       color: "#4facfe",
       gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
       glowColor: "rgba(79, 172, 254, 0.5)",
@@ -134,7 +153,8 @@ export default function Features() {
       icon: CheckCircle2,
       step: "04",
       title: "Process & Secure",
-      description: "Your file is processed with military-grade encryption. All files auto-delete after 2 hours.",
+      description:
+        "Your file is processed with military-grade encryption. All files auto-delete after 2 hours.",
       color: "#43e97b",
       gradient: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
       glowColor: "rgba(67, 233, 123, 0.5)",
@@ -145,7 +165,8 @@ export default function Features() {
       icon: Download,
       step: "05",
       title: "Download & Share",
-      description: "Download instantly or share via link. Export to Google Drive, Dropbox, or OneDrive.",
+      description:
+        "Download instantly or share via link. Export to Google Drive, Dropbox, or OneDrive.",
       color: "#fa709a",
       gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
       glowColor: "rgba(250, 112, 154, 0.5)",
@@ -426,6 +447,11 @@ export default function Features() {
         transform: translateY(-4px) scale(1.01);
       }
     }
+
+    .feature-card:focus-visible {
+      outline: 2px solid ${FEATURES_THEME.accent};
+      outline-offset: 4px;
+    }
   `;
     document.head.appendChild(style);
     return () => document.head.removeChild(style);
@@ -438,40 +464,51 @@ export default function Features() {
         headingRef.current,
         { opacity: 0, y: 60, scale: 0.9, rotationX: -20 },
         {
-          opacity: 1, y: 0, scale: 1, rotationX: 0,
-          duration: 1.4, ease: "back.out(1.2)",
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          rotationX: 0,
+          duration: 1.4,
+          ease: "back.out(1.2)",
           scrollTrigger: {
             trigger: headingRef.current,
             start: "top 85%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
 
       if (subtitleRef.current) {
-        const words = subtitleRef.current.querySelectorAll('.subtitle-word');
+        const words = subtitleRef.current.querySelectorAll(".subtitle-word");
         gsap.fromTo(
           words,
           { opacity: 0, y: 40, filter: "blur(10px)" },
           {
-            opacity: 1, y: 0, filter: "blur(0px)",
-            duration: 0.8, stagger: 0.08, delay: 0.4,
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+            duration: 0.8,
+            stagger: 0.08,
+            delay: 0.4,
             ease: "back.out(1.2)",
             scrollTrigger: {
               trigger: subtitleRef.current,
               start: "top 85%",
               toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       }
 
       particlesRef.current.filter(Boolean).forEach((particle, index) => {
         const pos = particlePositions[index];
         gsap.to(particle, {
-          y: -100, opacity: 0,
-          duration: pos.duration, ease: "none",
-          repeat: -1, delay: pos.delay,
+          y: -100,
+          opacity: 0,
+          duration: pos.duration,
+          ease: "none",
+          repeat: -1,
+          delay: pos.delay,
         });
       });
     }, sectionRef);
@@ -488,14 +525,17 @@ export default function Features() {
           timelineHeadingRef.current,
           { opacity: 0, y: 50, scale: 0.92 },
           {
-            opacity: 1, y: 0, scale: 1,
-            duration: 1.2, ease: "back.out(1.2)",
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1.2,
+            ease: "back.out(1.2)",
             scrollTrigger: {
               trigger: timelineHeadingRef.current,
               start: "top 85%",
               toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       }
 
@@ -504,14 +544,17 @@ export default function Features() {
           timelineSubtitleRef.current,
           { opacity: 0, y: 30 },
           {
-            opacity: 1, y: 0,
-            duration: 1, delay: 0.3, ease: "power3.out",
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            delay: 0.3,
+            ease: "power3.out",
             scrollTrigger: {
               trigger: timelineSubtitleRef.current,
               start: "top 88%",
               toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       }
 
@@ -529,7 +572,11 @@ export default function Features() {
             filter: "blur(8px)",
           },
           {
-            opacity: 1, y: 0, scale: 1, rotationY: 0, filter: "blur(0px)",
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotationY: 0,
+            filter: "blur(0px)",
             duration: 1.0,
             delay: index * 0.15,
             ease: "back.out(1.3)",
@@ -538,7 +585,7 @@ export default function Features() {
               start: "top 88%",
               toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       });
 
@@ -550,7 +597,8 @@ export default function Features() {
           connector,
           { scaleX: 0, transformOrigin: "left center", opacity: 0 },
           {
-            scaleX: 1, opacity: 1,
+            scaleX: 1,
+            opacity: 1,
             duration: 0.8,
             delay: index * 0.15 + 0.4,
             ease: "power3.inOut",
@@ -559,10 +607,9 @@ export default function Features() {
               start: "top 90%",
               toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       });
-
     }, timelineSectionRef);
 
     return () => ctx.revert();
@@ -575,22 +622,30 @@ export default function Features() {
     }
 
     const timeline = gsap.timeline({ repeat: -1 });
-    timeline.to(card, {
-      y: isMobile ? -5 : -12,
-      duration: 2.5 + index * 0.2,
-      ease: "sine.inOut",
-      yoyo: true,
-      repeat: -1,
-    }, 0);
-
-    if (!isMobile) {
-      timeline.to(card, {
-        rotationY: index % 2 === 0 ? 2 : -2,
-        duration: 4 + index * 0.2,
+    timeline.to(
+      card,
+      {
+        y: isMobile ? -5 : -12,
+        duration: 2.5 + index * 0.2,
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1,
-      }, 0);
+      },
+      0,
+    );
+
+    if (!isMobile) {
+      timeline.to(
+        card,
+        {
+          rotationY: index % 2 === 0 ? 2 : -2,
+          duration: 4 + index * 0.2,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        },
+        0,
+      );
     }
 
     floatingAnimations.current[index] = timeline;
@@ -605,9 +660,19 @@ export default function Features() {
       const ctx = gsap.context(() => {
         gsap.fromTo(
           card,
-          { opacity: 0, y: 100, scale: 0.8, rotationX: -30, filter: "blur(10px)" },
           {
-            opacity: 1, y: 0, scale: 1, rotationX: 0, filter: "blur(0px)",
+            opacity: 0,
+            y: 100,
+            scale: 0.8,
+            rotationX: -30,
+            filter: "blur(10px)",
+          },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotationX: 0,
+            filter: "blur(0px)",
             duration: 1.2,
             delay: features[index].delay,
             ease: "back.out(1.4)",
@@ -616,13 +681,16 @@ export default function Features() {
               start: "top 85%",
               toggleActions: "play none none reverse",
               onEnter: () => {
-                setTimeout(() => {
-                  setIsInitialized(true);
-                  startFloatingAnimation(card, index);
-                }, 1200 + features[index].delay * 1000);
+                setTimeout(
+                  () => {
+                    setIsInitialized(true);
+                    startFloatingAnimation(card, index);
+                  },
+                  1200 + features[index].delay * 1000,
+                );
               },
             },
-          }
+          },
         );
       }, card);
 
@@ -630,8 +698,8 @@ export default function Features() {
     });
 
     return () => {
-      contexts.forEach(ctx => ctx.revert());
-      floatingAnimations.current.forEach(anim => {
+      contexts.forEach((ctx) => ctx.revert());
+      floatingAnimations.current.forEach((anim) => {
         if (anim) anim.kill();
       });
     };
@@ -642,42 +710,72 @@ export default function Features() {
     if (!card) return;
 
     if (isEnter) {
-      if (floatingAnimations.current[index]) floatingAnimations.current[index].pause();
+      if (floatingAnimations.current[index])
+        floatingAnimations.current[index].pause();
       gsap.to(card, { scale: 1.05, y: -15, duration: 0.4, ease: "power2.out" });
 
       const iconContainer = card.querySelector(".icon-container");
-      if (iconContainer) gsap.to(iconContainer, { scale: 1.1, rotate: 5, duration: 0.4, ease: "back.out(1.5)" });
+      if (iconContainer)
+        gsap.to(iconContainer, {
+          scale: 1.1,
+          rotate: 5,
+          duration: 0.4,
+          ease: "back.out(1.5)",
+        });
 
       const icon = card.querySelector(".feature-icon");
-      if (icon) gsap.to(icon, { scale: 1.15, duration: 0.4, ease: "back.out(1.5)" });
+      if (icon)
+        gsap.to(icon, { scale: 1.15, duration: 0.4, ease: "back.out(1.5)" });
 
       const gradientBorder = card.querySelector(".gradient-border");
-      if (gradientBorder) gsap.to(gradientBorder, { opacity: 1, duration: 0.3 });
+      if (gradientBorder)
+        gsap.to(gradientBorder, { opacity: 1, duration: 0.3 });
 
       const statsBox = card.querySelector(".stats-box");
-      if (statsBox) gsap.to(statsBox, { y: 0, opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.5)" });
+      if (statsBox)
+        gsap.to(statsBox, {
+          y: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 0.3,
+          ease: "back.out(1.5)",
+        });
 
       const learnMore = card.querySelector(".learn-more");
       if (learnMore) gsap.to(learnMore, { opacity: 1, x: 0, duration: 0.3 });
 
       const shimmer = card.querySelector(".shimmer-effect");
-      if (shimmer) gsap.fromTo(shimmer, { x: "-100%" }, { x: "100%", duration: 0.8, ease: "power2.inOut" });
-
+      if (shimmer)
+        gsap.fromTo(
+          shimmer,
+          { x: "-100%" },
+          { x: "100%", duration: 0.8, ease: "power2.inOut" },
+        );
     } else {
-      if (floatingAnimations.current[index]) floatingAnimations.current[index].resume();
+      if (floatingAnimations.current[index])
+        floatingAnimations.current[index].resume();
       gsap.to(card, { scale: 1, y: 0, duration: 0.4, ease: "power2.out" });
 
       const iconContainer = card.querySelector(".icon-container");
-      if (iconContainer) gsap.to(iconContainer, { scale: 1, rotate: 0, duration: 0.4, ease: "elastic.out(1, 0.5)" });
+      if (iconContainer)
+        gsap.to(iconContainer, {
+          scale: 1,
+          rotate: 0,
+          duration: 0.4,
+          ease: "elastic.out(1, 0.5)",
+        });
 
       const icon = card.querySelector(".feature-icon");
-      if (icon) gsap.to(icon, { scale: 1, duration: 0.4, ease: "elastic.out(1, 0.5)" });
+      if (icon)
+        gsap.to(icon, { scale: 1, duration: 0.4, ease: "elastic.out(1, 0.5)" });
 
       const gradientBorder = card.querySelector(".gradient-border");
-      if (gradientBorder) gsap.to(gradientBorder, { opacity: 0.6, duration: 0.3 });
+      if (gradientBorder)
+        gsap.to(gradientBorder, { opacity: 0.6, duration: 0.3 });
 
       const statsBox = card.querySelector(".stats-box");
-      if (statsBox) gsap.to(statsBox, { y: 5, opacity: 0.8, scale: 0.95, duration: 0.3 });
+      if (statsBox)
+        gsap.to(statsBox, { y: 5, opacity: 0.8, scale: 0.95, duration: 0.3 });
 
       const learnMore = card.querySelector(".learn-more");
       if (learnMore) gsap.to(learnMore, { opacity: 0, x: -10, duration: 0.3 });
@@ -690,9 +788,16 @@ export default function Features() {
       setSelectedFeature(selectedFeature === index ? null : index);
       const card = featuresRef.current[index];
       if (card) {
-        gsap.fromTo(card,
+        gsap.fromTo(
+          card,
           { scale: 1 },
-          { scale: 1.03, duration: 0.2, yoyo: true, repeat: 1, ease: "power2.inOut" }
+          {
+            scale: 1.03,
+            duration: 0.2,
+            yoyo: true,
+            repeat: 1,
+            ease: "power2.inOut",
+          },
         );
       }
     }
@@ -724,20 +829,27 @@ export default function Features() {
 
       const detailEl = step.querySelector(".step-detail");
       if (detailEl) {
-        gsap.fromTo(detailEl,
+        gsap.fromTo(
+          detailEl,
           { opacity: 0, y: 8, height: 0 },
-          { opacity: 1, y: 0, height: "auto", duration: 0.35, ease: "power3.out" }
+          {
+            opacity: 1,
+            y: 0,
+            height: "auto",
+            duration: 0.35,
+            ease: "power3.out",
+          },
         );
       }
 
       const shimmerEl = step.querySelector(".timeline-shimmer");
       if (shimmerEl) {
-        gsap.fromTo(shimmerEl,
+        gsap.fromTo(
+          shimmerEl,
           { x: "-100%" },
-          { x: "100%", duration: 0.9, ease: "power2.inOut" }
+          { x: "100%", duration: 0.9, ease: "power2.inOut" },
         );
       }
-
     } else {
       setActiveStep(null);
 
@@ -772,17 +884,22 @@ export default function Features() {
   };
 
   const handleStepClick = (index) => {
-    setCompletedSteps(prev =>
-      prev.includes(index)
-        ? prev.filter(i => i !== index)
-        : [...prev, index]
+    setCompletedSteps((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
     );
 
     const step = stepRefs.current[index];
     if (step) {
-      gsap.fromTo(step,
+      gsap.fromTo(
+        step,
         { scale: 1 },
-        { scale: 1.06, duration: 0.15, yoyo: true, repeat: 1, ease: "power2.inOut" }
+        {
+          scale: 1.06,
+          duration: 0.15,
+          yoyo: true,
+          repeat: 1,
+          ease: "power2.inOut",
+        },
       );
     }
   };
@@ -791,8 +908,13 @@ export default function Features() {
     const text = "Everything you need to work with PDFs, all in one place";
     const words = text.split(" ");
     return words.map((word, index) => (
-      <span key={index} className="subtitle-word subtitle-shimmer" style={{ animationDelay: `${index * 0.1}s` }}>
-        {word}{index < words.length - 1 ? "\u00A0" : ""}
+      <span
+        key={index}
+        className="subtitle-word subtitle-shimmer"
+        style={{ animationDelay: `${index * 0.1}s` }}
+      >
+        {word}
+        {index < words.length - 1 ? "\u00A0" : ""}
       </span>
     ));
   };
@@ -826,7 +948,7 @@ export default function Features() {
                 top: `${pos.top}%`,
                 opacity: 0.6,
                 boxShadow: `0 0 10px ${FEATURES_THEME.accentLight}`,
-                willChange: 'transform, opacity'
+                willChange: "transform, opacity",
               }}
             />
           ))}
@@ -863,19 +985,21 @@ export default function Features() {
           aria-hidden="true"
         />
 
-        <style>{`
-          .feature-card:focus-visible {
-            outline: 2px solid ${FEATURES_THEME.accent};
-            outline-offset: 4px;
-          }
-        `}</style>
-
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="text-center mb-20 md:mt-5">
-            <h2 ref={headingRef} className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
+            <h2
+              ref={headingRef}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6"
+            >
               <span className="inline-block">
                 {"Powerful ".split("").map((letter, index) => (
-                  <span key={index} className={`letter-glow-${index} inline-block`} style={{ display: letter === " " ? "inline" : "inline-block" }}>
+                  <span
+                    key={index}
+                    className={`letter-glow-${index} inline-block`}
+                    style={{
+                      display: letter === " " ? "inline" : "inline-block",
+                    }}
+                  >
                     {letter === " " ? "\u00A0" : letter}
                   </span>
                 ))}
@@ -897,7 +1021,10 @@ export default function Features() {
               </span>
             </h2>
 
-            <p ref={subtitleRef} className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
+            <p
+              ref={subtitleRef}
+              className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed"
+            >
               {renderSubtitle()}
             </p>
           </div>
@@ -918,7 +1045,10 @@ export default function Features() {
                   role="article"
                   aria-label={`${feature.title}: ${feature.description}`}
                   className="feature-card relative group cursor-pointer focus:outline-none"
-                  style={{ transformStyle: "preserve-3d", perspective: "1200px" }}
+                  style={{
+                    transformStyle: "preserve-3d",
+                    perspective: "1200px",
+                  }}
                 >
                   <div
                     className="gradient-border absolute inset-0 rounded-3xl p-[2px] opacity-60 transition-opacity duration-300"
@@ -933,10 +1063,25 @@ export default function Features() {
                   </div>
 
                   <div className="relative h-full p-8 rounded-3xl backdrop-blur-xl overflow-hidden">
-                    <div className="absolute top-0 right-0 w-20 h-20 opacity-30" style={{ background: `radial-gradient(circle at top right, ${feature.color}, transparent)` }} />
-                    <div className="absolute bottom-0 left-0 w-20 h-20 opacity-20" style={{ background: `radial-gradient(circle at bottom left, ${feature.color}, transparent)` }} />
+                    <div
+                      className="absolute top-0 right-0 w-20 h-20 opacity-30"
+                      style={{
+                        background: `radial-gradient(circle at top right, ${feature.color}, transparent)`,
+                      }}
+                    />
+                    <div
+                      className="absolute bottom-0 left-0 w-20 h-20 opacity-20"
+                      style={{
+                        background: `radial-gradient(circle at bottom left, ${feature.color}, transparent)`,
+                      }}
+                    />
 
-                    <div className="shimmer-effect absolute inset-0 -translate-x-full pointer-events-none" style={{ background: `linear-gradient(90deg, transparent, ${feature.glowColor}, transparent)` }} />
+                    <div
+                      className="shimmer-effect absolute inset-0 -translate-x-full pointer-events-none"
+                      style={{
+                        background: `linear-gradient(90deg, transparent, ${feature.glowColor}, transparent)`,
+                      }}
+                    />
 
                     <div className="relative mb-6 z-10">
                       <div
@@ -947,9 +1092,18 @@ export default function Features() {
                           boxShadow: `0 8px 32px ${feature.glowColor}40`,
                         }}
                       >
-                        <div className="absolute inset-0 blur-xl opacity-50" style={{ background: `radial-gradient(circle, ${feature.color}, transparent)` }} />
+                        <div
+                          className="absolute inset-0 blur-xl opacity-50"
+                          style={{
+                            background: `radial-gradient(circle, ${feature.color}, transparent)`,
+                          }}
+                        />
                         <div className="feature-icon relative z-10">
-                          <IconComponent size={36} color={feature.color} strokeWidth={2} />
+                          <IconComponent
+                            size={36}
+                            color={feature.color}
+                            strokeWidth={2}
+                          />
                         </div>
                       </div>
                     </div>
@@ -965,26 +1119,55 @@ export default function Features() {
                       }}
                     >
                       <div className="flex items-center gap-1.5">
-                        <div className="w-1.5 h-1.5 rounded-full" style={{ background: feature.color, boxShadow: `0 0 8px ${feature.color}` }} />
+                        <div
+                          className="w-1.5 h-1.5 rounded-full"
+                          style={{
+                            background: feature.color,
+                            boxShadow: `0 0 8px ${feature.color}`,
+                          }}
+                        />
                         {feature.stats}
                       </div>
                     </div>
 
-                    <h3 className="text-2xl font-bold text-white mb-3 relative z-10">{feature.title}</h3>
-                    <p className="text-white/70 leading-relaxed relative z-10 mb-6">{feature.description}</p>
+                    <h3 className="text-2xl font-bold text-white mb-3 relative z-10">
+                      {feature.title}
+                    </h3>
+                    <p className="text-white/70 leading-relaxed relative z-10 mb-6">
+                      {feature.description}
+                    </p>
 
                     <div className="learn-more relative z-10 flex items-center gap-2 text-sm font-semibold opacity-0 -translate-x-2">
-                      <span style={{ background: feature.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                      <span
+                        style={{
+                          background: feature.gradient,
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                        }}
+                      >
                         Learn more
                       </span>
-                      <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: feature.color }}>
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      <svg
+                        className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        style={{ color: feature.color }}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
                       </svg>
                     </div>
 
                     <div
                       className="absolute -inset-4 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-3xl pointer-events-none -z-10"
-                      style={{ background: `radial-gradient(circle, ${feature.glowColor}, transparent 70%)` }}
+                      style={{
+                        background: `radial-gradient(circle, ${feature.glowColor}, transparent 70%)`,
+                      }}
                     />
                   </div>
                 </div>
@@ -1015,77 +1198,45 @@ export default function Features() {
               >
                 <span className="relative z-10 flex items-center gap-3">
                   Get Started Free
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  <svg
+                    className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
                   </svg>
                 </span>
-                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)" }} />
+                <div
+                  className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                  }}
+                />
               </button>
-
-              <div
-                className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"
-                style={{
-                  background: `linear-gradient(135deg, ${FEATURES_THEME.accent}, ${FEATURES_THEME.accentLight})`,
-                  transform: 'scale(1.1)',
-                  animation: 'pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                }}
-              />
             </div>
           </div>
         </div>
-      </section>
 
-      {/* ─── Timeline / Process Flow Section ─── */}
-      <section
-        ref={timelineSectionRef}
-        className="relative py-28 px-6 overflow-hidden"
-        aria-label="How it works — process timeline"
-      >
-        {/* Background — same palette as Features */}
-        <div
-          className="absolute inset-0 -z-10"
-          style={{
-            background: `linear-gradient(160deg, #0a0f1f 0%, #071e35 40%, #0f0a1e 70%, #0a0f1f 100%)`,
-          }}
-        />
 
-        {/* Moving grid */}
-        <div
-          className="absolute inset-0 opacity-[0.05] -z-10"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, rgba(129, 140, 248, 0.2) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(129, 140, 248, 0.2) 1px, transparent 1px)
-            `,
-            backgroundSize: "60px 60px",
-            animation: "gridMove 25s linear infinite reverse",
-          }}
-          aria-hidden="true"
-        />
+      {/* ─── Timeline Section ─── */}
 
-        {/* Radial glow center */}
         <div
           className="absolute inset-0 pointer-events-none -z-10"
           style={{
-            background: "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(79, 70, 229, 0.08) 0%, transparent 70%)",
+            background:
+              "radial-gradient(ellipse 80% 50% at 50% 50%, rgba(79, 70, 229, 0.08) 0%, transparent 70%)",
           }}
           aria-hidden="true"
         />
 
-        {/* Top / bottom fade blend with adjacent sections */}
-        <div
-          className="absolute top-0 left-0 right-0 h-32 pointer-events-none -z-10"
-          style={{ background: "linear-gradient(to bottom, #140824, transparent)" }}
-          aria-hidden="true"
-        />
-        <div
-          className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none -z-10"
-          style={{ background: "linear-gradient(to top, #0a0f1f, transparent)" }}
-          aria-hidden="true"
-        />
-
-        <div className="relative z-10 max-w-7xl mx-auto">
-          {/* Section heading */}
+        <div className="relative mt-20 z-10 max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <div
               ref={timelineHeadingRef}
@@ -1098,7 +1249,11 @@ export default function Features() {
             >
               <span
                 className="w-2 h-2 rounded-full"
-                style={{ background: "#818cf8", boxShadow: "0 0 8px #818cf8", animation: "pulse-ring 2s ease infinite" }}
+                style={{
+                  background: "#818cf8",
+                  boxShadow: "0 0 8px #818cf8",
+                  animation: "pulse-ring 2s ease infinite",
+                }}
               />
               Step-by-step workflow
             </div>
@@ -1106,7 +1261,13 @@ export default function Features() {
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-5">
               <span className="inline-block">
                 {"How It".split("").map((letter, i) => (
-                  <span key={i} className={`letter-glow-${i} inline-block`} style={{ display: letter === " " ? "inline" : "inline-block" }}>
+                  <span
+                    key={i}
+                    className={`letter-glow-${i} inline-block`}
+                    style={{
+                      display: letter === " " ? "inline" : "inline-block",
+                    }}
+                  >
                     {letter === " " ? "\u00A0" : letter}
                   </span>
                 ))}
@@ -1127,23 +1288,15 @@ export default function Features() {
               ref={timelineSubtitleRef}
               className="text-xl text-white/60 max-w-2xl mx-auto leading-relaxed"
             >
-              From upload to download in seconds — hover each step to explore the details
+              From upload to download in seconds — hover each step to explore
+              the details
             </p>
           </div>
 
           {/* ─── Desktop Timeline (horizontal) ─── */}
           <div className="hidden md:block">
-            {/* Connector track */}
             <div className="relative flex items-start justify-between gap-0">
-              {/* Background rail */}
-              <div
-                className="absolute top-[52px] left-[100px] right-[100px] h-[2px] -z-0"
-                style={{
-                  background: "rgba(129, 140, 248, 0.12)",
-                  borderRadius: "2px",
-                }}
-                aria-hidden="true"
-              />
+              
 
               {timelineSteps.map((step, index) => {
                 const IconComponent = step.icon;
@@ -1151,30 +1304,31 @@ export default function Features() {
                 const isDone = completedSteps.includes(index);
 
                 return (
-                  <div key={index} className="relative flex-1 flex flex-col items-center">
-
-                    {/* Animated connector line (between steps) */}
+                  <div
+                    key={index}
+                    className="relative flex-1 flex flex-col items-center"
+                  >
                     {index < timelineSteps.length - 1 && (
                       <div
                         ref={(el) => (connectorRefs.current[index] = el)}
-                        className="absolute top-[51px] left-1/2 w-full h-[3px] -z-0 overflow-hidden"
+                        className="absolute top-[40px] left-1/2 w-full h-[3px] -z-0 overflow-hidden"
                         style={{ transformOrigin: "left center" }}
                         aria-hidden="true"
                       >
                         <div
                           className={`h-full w-full ${activeStep === index || activeStep === index + 1 ? "timeline-connector-active" : ""}`}
                           style={{
-                            background: activeStep === index || activeStep === index + 1
-                              ? `linear-gradient(90deg, ${step.color}00, ${step.color}, ${timelineSteps[index + 1].color}, ${timelineSteps[index + 1].color}00)`
-                              : isDone
-                              ? `linear-gradient(90deg, ${step.color}60, ${timelineSteps[index + 1].color}60)`
-                              : "rgba(129, 140, 248, 0.2)",
+                            background:
+                              activeStep === index || activeStep === index + 1
+                                ? `linear-gradient(90deg, ${step.color}00, ${step.color}, ${timelineSteps[index + 1].color}, ${timelineSteps[index + 1].color}00)`
+                                : isDone
+                                  ? `linear-gradient(90deg, ${step.color}60, ${timelineSteps[index + 1].color}60)`
+                                  : "rgba(129, 140, 248, 0.2)",
                             backgroundSize: "200% 100%",
                             transition: "background 0.4s ease",
                           }}
                         />
-                        {/* Traveling data packet */}
-                        {(activeStep === index) && (
+                        {activeStep === index && (
                           <div
                             className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full"
                             style={{
@@ -1190,7 +1344,6 @@ export default function Features() {
                       </div>
                     )}
 
-                    {/* Step card */}
                     <div
                       ref={(el) => (stepRefs.current[index] = el)}
                       className="timeline-step-card relative w-full max-w-[200px] cursor-pointer"
@@ -1213,10 +1366,22 @@ export default function Features() {
                       aria-label={`Step ${step.step}: ${step.title}`}
                       aria-pressed={isDone}
                     >
-                      {/* Icon circle */}
                       <div className="flex justify-center mb-5 relative z-10">
                         <div className="relative">
-                          {/* Ping ring */}
+                          <div
+                            className="absolute -inset-8 rounded-3xl -z-10"
+                            style={{
+                              background: `radial-gradient(circle at center, ${step.color}15 0%, ${step.color}08 40%, transparent 70%)`,
+                            }}
+                          />
+
+                          <div
+                            className="absolute -inset-4 rounded-2xl -z-10 opacity-30"
+                            style={{
+                              background: `repeating-radial-gradient(circle at center, transparent 0px, transparent 10px, ${step.color}20 10px, ${step.color}20 11px)`,
+                            }}
+                          />
+
                           {isActive && (
                             <div
                               className="step-ping absolute inset-0 rounded-full"
@@ -1227,41 +1392,72 @@ export default function Features() {
                             />
                           )}
 
-                          {/* Orbit particles */}
                           {isActive && (
                             <>
-                              <div className="step-orbit-1" style={{ background: step.color, boxShadow: `0 0 6px ${step.color}` }} />
-                              <div className="step-orbit-2" style={{ background: step.color, opacity: 0.6 }} />
+                              <div
+                                className="step-orbit-1"
+                                style={{
+                                  background: step.color,
+                                  boxShadow: `0 0 6px ${step.color}`,
+                                }}
+                              />
+                              <div
+                                className="step-orbit-2"
+                                style={{
+                                  background: step.color,
+                                  opacity: 0.6,
+                                }}
+                              />
                             </>
                           )}
 
-                          {/* Main icon bg */}
                           <div
-                            className="timeline-icon-wrap relative flex items-center justify-center w-[72px] h-[72px] rounded-2xl z-10"
+                            className="timeline-icon-wrap relative flex items-center justify-center w-[72px] h-[72px] rounded-2xl z-10 overflow-hidden"
                             style={{
                               background: isDone
-                                ? `linear-gradient(135deg, ${step.color}40, ${step.color}20)`
-                                : `linear-gradient(135deg, ${step.color}15, ${step.color}08)`,
-                              border: `2px solid ${isActive || isDone ? step.color + "80" : step.color + "25"}`,
+                                ? `rgba(${parseInt(step.color.slice(1, 3), 16)}, ${parseInt(step.color.slice(3, 5), 16)}, ${parseInt(step.color.slice(5, 7), 16)}, 0.25)`
+                                : `rgba(${parseInt(step.color.slice(1, 3), 16)}, ${parseInt(step.color.slice(3, 5), 16)}, ${parseInt(step.color.slice(5, 7), 16)}, 0.12)`,
+                              border: `2px solid ${isActive || isDone ? step.color + "80" : step.color + "30"}`,
                               boxShadow: isActive
-                                ? `0 0 30px ${step.glowColor}, 0 0 60px ${step.glowColor}60`
+                                ? `0 0 30px ${step.glowColor}, 0 0 60px ${step.glowColor}60, inset 0 0 20px ${step.color}15`
                                 : isDone
-                                ? `0 0 20px ${step.glowColor}50`
-                                : "none",
+                                  ? `0 0 20px ${step.glowColor}50, inset 0 0 15px ${step.color}10`
+                                  : `inset 0 0 10px ${step.color}08`,
                               transition: "all 0.35s ease",
+                              backdropFilter: "blur(16px) saturate(180%)",
+                              WebkitBackdropFilter: "blur(16px) saturate(180%)",
                             }}
                           >
-                            <div className="absolute inset-0 rounded-2xl blur-xl opacity-40" style={{ background: `radial-gradient(circle, ${step.color}, transparent)` }} />
+                            <div
+                              className="absolute inset-0 rounded-2xl"
+                              style={{
+                                background: `linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(255,255,255,0.05) 100%)`,
+                              }}
+                            />
+
+                            <div
+                              className="absolute inset-0 rounded-2xl blur-2xl opacity-40 -z-10"
+                              style={{
+                                background: `radial-gradient(circle, ${step.color}60, transparent 70%)`,
+                              }}
+                            />
+
                             <IconComponent
                               size={30}
-                              color={isActive || isDone ? step.color : `${step.color}80`}
-                              strokeWidth={2}
-                              className="relative z-10"
-                              style={{ transition: "all 0.3s ease" }}
+                              color={
+                                isActive || isDone
+                                  ? step.color
+                                  : `${step.color}cc`
+                              }
+                              strokeWidth={2.5}
+                              className="relative z-10 drop-shadow-lg"
+                              style={{
+                                transition: "all 0.3s ease",
+                                filter: `drop-shadow(0 0 8px ${step.color}40)`,
+                              }}
                             />
                           </div>
 
-                          {/* Completion checkmark badge */}
                           {isDone && (
                             <div
                               className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center z-20"
@@ -1270,34 +1466,50 @@ export default function Features() {
                                 boxShadow: `0 0 10px ${step.glowColor}`,
                               }}
                             >
-                              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                                <path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                              <svg
+                                width="10"
+                                height="10"
+                                viewBox="0 0 10 10"
+                                fill="none"
+                              >
+                                <path
+                                  d="M2 5l2 2 4-4"
+                                  stroke="white"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
                               </svg>
                             </div>
                           )}
                         </div>
                       </div>
 
-                      {/* Card body */}
                       <div
                         className="relative rounded-2xl p-4 overflow-hidden"
                         style={{
                           background: isActive
-                            ? `linear-gradient(135deg, rgba(15,15,28,0.95) 0%, rgba(${step.color.replace("#","").match(/.{2}/g).map(h=>parseInt(h,16)).join(",")}, 0.08) 100%)`
+                            ? `linear-gradient(135deg, rgba(15,15,28,0.95) 0%, rgba(${step.color
+                                .replace("#", "")
+                                .match(/.{2}/g)
+                                .map((h) => parseInt(h, 16))
+                                .join(",")}, 0.08) 100%)`
                             : "rgba(12,12,22,0.85)",
                           border: `1px solid ${isActive ? step.color + "40" : "rgba(129,140,248,0.1)"}`,
                           backdropFilter: "blur(12px)",
                           transition: "all 0.35s ease",
-                          boxShadow: isActive ? `0 8px 40px ${step.glowColor}30` : "none",
+                          boxShadow: isActive
+                            ? `0 8px 40px ${step.glowColor}30`
+                            : "none",
                         }}
                       >
-                        {/* Shimmer sweep */}
                         <div
                           className="timeline-shimmer absolute inset-0 -translate-x-full pointer-events-none"
-                          style={{ background: `linear-gradient(90deg, transparent, ${step.glowColor}, transparent)` }}
+                          style={{
+                            background: `linear-gradient(90deg, transparent, ${step.glowColor}, transparent)`,
+                          }}
                         />
 
-                        {/* Step number */}
                         <div
                           className="text-xs font-black mb-2 tracking-widest"
                           style={{
@@ -1309,7 +1521,6 @@ export default function Features() {
                           {step.step}
                         </div>
 
-                        {/* Badge */}
                         <div
                           className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold mb-3"
                           style={{
@@ -1318,15 +1529,21 @@ export default function Features() {
                             color: step.color,
                           }}
                         >
-                          <div className="w-1 h-1 rounded-full" style={{ background: step.color }} />
+                          <div
+                            className="w-1 h-1 rounded-full"
+                            style={{ background: step.color }}
+                          />
                           {step.badge}
                         </div>
 
-                        <h3 className="text-sm font-bold text-white mb-2 leading-snug">{step.title}</h3>
+                        <h3 className="text-sm font-bold text-white mb-2 leading-snug">
+                          {step.title}
+                        </h3>
 
-                        <p className="text-white/55 text-xs leading-relaxed">{step.description}</p>
+                        <p className="text-white/55 text-xs leading-relaxed">
+                          {step.description}
+                        </p>
 
-                        {/* Hover detail */}
                         <div
                           className="step-detail overflow-hidden"
                           style={{ height: 0, opacity: 0 }}
@@ -1344,7 +1561,6 @@ export default function Features() {
                           </div>
                         </div>
 
-                        {/* Bottom corner glow */}
                         <div
                           className="absolute bottom-0 right-0 w-16 h-16 pointer-events-none"
                           style={{
@@ -1360,7 +1576,6 @@ export default function Features() {
               })}
             </div>
 
-            {/* Progress bar below timeline */}
             <div className="mt-10 flex items-center justify-center gap-4">
               <span className="text-white/30 text-sm">
                 {completedSteps.length === 0
@@ -1375,17 +1590,18 @@ export default function Features() {
                   className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
                     width: `${(completedSteps.length / timelineSteps.length) * 100}%`,
-                    background: "linear-gradient(90deg, #667eea, #818cf8, #f093fb)",
-                    boxShadow: completedSteps.length > 0 ? "0 0 12px rgba(129,140,248,0.6)" : "none",
+                    background:
+                      "linear-gradient(90deg, #667eea, #818cf8, #f093fb)",
+                    boxShadow:
+                      completedSteps.length > 0
+                        ? "0 0 12px rgba(129,140,248,0.6)"
+                        : "none",
                   }}
                 />
               </div>
               {completedSteps.length === timelineSteps.length && (
-                <span
-                  className="text-sm font-bold"
-                  style={{ color: "#43e97b" }}
-                >
-                  All steps done.
+                <span className="text-sm font-bold" style={{ color: "#43e97b" }}>
+                  All steps done!
                 </span>
               )}
             </div>
@@ -1393,12 +1609,7 @@ export default function Features() {
 
           {/* ─── Mobile Timeline (vertical) ─── */}
           <div className="md:hidden relative">
-            {/* Vertical rail */}
-            <div
-              className="absolute left-8 top-8 bottom-8 w-[2px]"
-              style={{ background: "rgba(129,140,248,0.12)" }}
-              aria-hidden="true"
-            />
+          
 
             <div className="flex flex-col gap-6">
               {timelineSteps.map((step, index) => {
@@ -1408,10 +1619,9 @@ export default function Features() {
 
                 return (
                   <div key={index} className="relative flex gap-6 items-start">
-                    {/* Vertical connector segment fill */}
                     {index < timelineSteps.length - 1 && (
                       <div
-                        className="absolute left-[30px] top-[68px] w-[2px] h-[calc(100%+8px)] -z-0"
+                        className="absolute left-[30px] top-[58px] w-[2px] h-[calc(100%+8px)] -z-0"
                         style={{
                           background: isDone
                             ? `linear-gradient(180deg, ${step.color}60, ${timelineSteps[index + 1].color}30)`
@@ -1422,15 +1632,25 @@ export default function Features() {
                       />
                     )}
 
-                    {/* Icon column */}
                     <div className="relative flex-shrink-0 z-10">
                       {isDone && (
                         <div
                           className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center z-20"
                           style={{ background: step.gradient }}
                         >
-                          <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
-                            <path d="M1.5 4l1.5 1.5 3.5-3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <svg
+                            width="8"
+                            height="8"
+                            viewBox="0 0 8 8"
+                            fill="none"
+                          >
+                            <path
+                              d="M1.5 4l1.5 1.5 3.5-3.5"
+                              stroke="white"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
                           </svg>
                         </div>
                       )}
@@ -1438,18 +1658,27 @@ export default function Features() {
                       <div
                         className="timeline-icon-wrap flex items-center justify-center w-[60px] h-[60px] rounded-xl relative"
                         style={{
-                          background: isDone ? `${step.color}25` : `${step.color}10`,
+                          background: isDone
+                            ? `${step.color}25`
+                            : `${step.color}10`,
                           border: `2px solid ${isActive || isDone ? step.color + "70" : step.color + "20"}`,
-                          boxShadow: isActive ? `0 0 20px ${step.glowColor}` : "none",
+                          boxShadow: isActive
+                            ? `0 0 20px ${step.glowColor}`
+                            : "none",
                           transition: "all 0.3s ease",
                         }}
                         onClick={() => handleStepClick(index)}
                       >
-                        <IconComponent size={26} color={isActive || isDone ? step.color : `${step.color}60`} strokeWidth={2} />
+                        <IconComponent
+                          size={26}
+                          color={
+                            isActive || isDone ? step.color : `${step.color}60`
+                          }
+                          strokeWidth={2}
+                        />
                       </div>
                     </div>
 
-                    {/* Content column */}
                     <div
                       ref={(el) => (stepRefs.current[index] = el)}
                       className="flex-1 rounded-2xl p-5 cursor-pointer"
@@ -1457,7 +1686,9 @@ export default function Features() {
                         background: "rgba(12,12,22,0.9)",
                         border: `1px solid ${isActive ? step.color + "35" : "rgba(129,140,248,0.08)"}`,
                         transition: "all 0.3s ease",
-                        boxShadow: isActive ? `0 4px 30px ${step.glowColor}20` : "none",
+                        boxShadow: isActive
+                          ? `0 4px 30px ${step.glowColor}20`
+                          : "none",
                       }}
                       onTouchStart={() => handleStepHover(index, true)}
                       onTouchEnd={() => handleStepHover(index, false)}
@@ -1466,25 +1697,40 @@ export default function Features() {
                       <div className="flex items-center gap-2 mb-2">
                         <span
                           className="text-xs font-black tracking-widest"
-                          style={{ background: step.gradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+                          style={{
+                            background: step.gradient,
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                          }}
                         >
                           {step.step}
                         </span>
                         <div
                           className="px-2 py-0.5 rounded-full text-[10px] font-bold"
-                          style={{ background: `${step.color}18`, border: `1px solid ${step.color}30`, color: step.color }}
+                          style={{
+                            background: `${step.color}18`,
+                            border: `1px solid ${step.color}30`,
+                            color: step.color,
+                          }}
                         >
                           {step.badge}
                         </div>
                       </div>
 
-                      <h3 className="text-base font-bold text-white mb-1">{step.title}</h3>
-                      <p className="text-white/55 text-xs leading-relaxed">{step.description}</p>
+                      <h3 className="text-base font-bold text-white mb-1">
+                        {step.title}
+                      </h3>
+                      <p className="text-white/55 text-xs leading-relaxed">
+                        {step.description}
+                      </p>
 
                       {isActive && (
                         <div
                           className="mt-3 pt-3 border-t text-[11px] leading-relaxed step-detail-enter"
-                          style={{ borderColor: `${step.color}20`, color: `${step.color}bb` }}
+                          style={{
+                            borderColor: `${step.color}20`,
+                            color: `${step.color}bb`,
+                          }}
                         >
                           {step.detail}
                         </div>
@@ -1495,26 +1741,32 @@ export default function Features() {
               })}
             </div>
 
-            {/* Mobile progress */}
             <div className="mt-10 px-2">
               <div className="flex justify-between text-xs text-white/30 mb-2">
                 <span>Progress</span>
-                <span>{completedSteps.length}/{timelineSteps.length}</span>
+                <span>
+                  {completedSteps.length}/{timelineSteps.length}
+                </span>
               </div>
-              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(129,140,248,0.1)" }}>
+              <div
+                className="h-1.5 rounded-full overflow-hidden"
+                style={{ background: "rgba(129,140,248,0.1)" }}
+              >
                 <div
                   className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
                     width: `${(completedSteps.length / timelineSteps.length) * 100}%`,
                     background: "linear-gradient(90deg, #667eea, #818cf8)",
-                    boxShadow: completedSteps.length > 0 ? "0 0 8px rgba(129,140,248,0.5)" : "none",
+                    boxShadow:
+                      completedSteps.length > 0
+                        ? "0 0 8px rgba(129,140,248,0.5)"
+                        : "none",
                   }}
                 />
               </div>
             </div>
           </div>
 
-          {/* CTA below timeline */}
           <div className="mt-16 text-center">
             <p className="text-white/40 text-sm mb-6">
               Ready to get started? It only takes 30 seconds.
@@ -1523,7 +1775,8 @@ export default function Features() {
               <button
                 className="px-8 py-4 rounded-full font-bold text-lg text-white relative overflow-hidden"
                 style={{
-                  background: "linear-gradient(135deg, #667eea 0%, #f093fb 50%, #fa709a 100%)",
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #f093fb 50%, #fa709a 100%)",
                   backgroundSize: "200% 200%",
                   animation: "gradient-shift 4s ease infinite",
                   boxShadow: "0 10px 40px rgba(102,126,234,0.4)",
@@ -1531,7 +1784,8 @@ export default function Features() {
                 onMouseEnter={(e) => {
                   gsap.to(e.currentTarget, {
                     scale: 1.06,
-                    boxShadow: "0 15px 60px rgba(102,126,234,0.6), 0 0 80px rgba(240,147,251,0.3)",
+                    boxShadow:
+                      "0 15px 60px rgba(102,126,234,0.6), 0 0 80px rgba(240,147,251,0.3)",
                     duration: 0.3,
                     ease: "back.out(1.5)",
                   });
@@ -1546,19 +1800,34 @@ export default function Features() {
               >
                 <span className="relative z-10 flex items-center gap-3">
                   Try It Free — No signup needed
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  <svg
+                    className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
                   </svg>
                 </span>
                 <div
                   className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"
-                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)" }}
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)",
+                  }}
                 />
               </button>
             </div>
           </div>
         </div>
+    
       </section>
+
     </>
   );
 }
