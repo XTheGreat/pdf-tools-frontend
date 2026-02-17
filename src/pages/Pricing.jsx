@@ -1,7 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Check, Sparkles, Zap, Shield, Users, Lock, Heart, Infinity as InfinityIcon } from "lucide-react";
+import {
+  Check,
+  Sparkles,
+  Zap,
+  Shield,
+  Users,
+  Lock,
+  Heart,
+  Infinity as InfinityIcon,
+} from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,9 +36,9 @@ export default function PricingPage() {
     bg: "rgba(10, 10, 13, 1)",
   };
 
-const getParticleCount = () => {
-  return window.innerWidth < 768 ? 100 : 200; 
-};
+  const getParticleCount = () => {
+    return window.innerWidth < 768 ? 100 : 200;
+  };
 
   const createParticles = () => {
     const count = getParticleCount();
@@ -54,21 +63,24 @@ const getParticleCount = () => {
     {
       icon: InfinityIcon,
       title: "Unlimited Usage",
-      description: "Convert as many documents as you need, whenever you need them",
+      description:
+        "Convert as many documents as you need, whenever you need them",
       color: "#667eea",
       glow: "rgba(102, 126, 234, 0.5)",
     },
     {
       icon: Zap,
       title: "Lightning Fast",
-      description: "Process your files in seconds with our optimized infrastructure",
+      description:
+        "Process your files in seconds with our optimized infrastructure",
       color: "#0ea5e9",
       glow: "rgba(14, 165, 233, 0.5)",
     },
     {
       icon: Shield,
       title: "100% Secure",
-      description: "Your files are encrypted and automatically deleted after processing",
+      description:
+        "Your files are encrypted and automatically deleted after processing",
       color: "#8b5cf6",
       glow: "rgba(139, 92, 246, 0.5)",
     },
@@ -88,8 +100,8 @@ const getParticleCount = () => {
     },
     {
       icon: Heart,
-      title: "Made with Love",
-      description: "Built by developers, for everyone who needs simple tools",
+      title: "Thoughtfully Crafted",
+      description: "Focused on clean design and real-world needs",
       color: "#ef4444",
       glow: "rgba(239, 68, 68, 0.5)",
     },
@@ -98,27 +110,33 @@ const getParticleCount = () => {
   const faqs = [
     {
       question: "Is this really completely free?",
-      answer: "Yes! All our tools are 100% free with no hidden costs, no premium tiers, and no limitations. We believe document conversion should be accessible to everyone.",
+      answer:
+        "Yes! All our tools are 100% free with no hidden costs, no premium tiers, and no limitations. We believe document conversion should be accessible to everyone.",
     },
     {
       question: "Do I need to create an account?",
-      answer: "Nope! You can use all our tools immediately without signing up. Just upload your file and start converting.",
+      answer:
+        "Nope! You can use all our tools immediately without signing up. Just upload your file and start converting.",
     },
     {
       question: "Are there any file size limits?",
-      answer: "We support files up to 50MB to ensure fast processing for everyone. This covers 99% of common use cases.",
+      answer:
+        "We support files up to 50MB to ensure fast processing for everyone. This covers 99% of common use cases.",
     },
     {
       question: "How do you keep it free?",
-      answer: "We're passionate about building useful tools. This project is supported by our community and runs on efficient infrastructure to keep costs minimal.",
+      answer:
+        "We're passionate about building useful tools. This project is supported by our community and runs on efficient infrastructure to keep costs minimal.",
     },
     {
       question: "Is my data safe?",
-      answer: "Absolutely. Files are processed securely and automatically deleted from our servers immediately after conversion. We never store or access your documents.",
+      answer:
+        "Absolutely. Files are processed securely and automatically deleted from our servers immediately after conversion. We never store or access your documents.",
     },
     {
       question: "Will it always be free?",
-      answer: "Yes! We're committed to keeping DocFlux free forever. No ads, no premium plans, no catches.",
+      answer:
+        "Yes! We're committed to keeping DocFlux free forever. No ads, no premium plans, no catches.",
     },
   ];
 
@@ -208,165 +226,177 @@ const getParticleCount = () => {
     return () => document.head.removeChild(style);
   }, []);
 
-useEffect(() => {
-  const ctx = gsap.context(() => {
-    const tl = gsap.timeline();
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline();
 
-    tl.fromTo(
-      badgeRef.current,
-      { opacity: 0, scale: 0.8, y: -20 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.7)" }
-    );
+      tl.fromTo(
+        badgeRef.current,
+        { opacity: 0, scale: 0.8, y: -20 },
+        { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "back.out(1.7)" },
+      );
 
-    tl.fromTo(
-      titleRef.current,
-      { opacity: 0, y: 50, scale: 0.95 },
-      { 
-        opacity: 1, 
-        y: 0, 
-        scale: 1, 
-        duration: 1, 
-        ease: "power3.out" 
-      },
-      "-=0.3"
-    );
-
-    tl.fromTo(
-      subtitleRef.current,
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
-      "-=0.5"
-    );
-
-    particlesRef.current.filter(Boolean).forEach((particle, index) => {
-      const pos = particlePositions[index];
-      
-      gsap.to(particle, {
-        y: -150,
-        x: Math.sin(index) * 30,
-        opacity: 0,
-        rotation: 180,
-        duration: pos.duration,
-        ease: "none",
-        repeat: -1,
-        delay: pos.delay,
-      });
-    });
-
-  }, sectionRef);
-
-  return () => {
-    ctx.revert();
-  };
-}, [particlePositions]);
-
-useEffect(() => {
-  if (!carouselRef.current) return;
-
-  const carousel = carouselRef.current;
-  const cards = carousel.querySelectorAll('.feature-carousel-card');
-  
-  if (cards.length === 0) return;
-
-  if (carouselTimelineRef.current) {
-    carouselTimelineRef.current.kill();
-  }
-
-  let isMounted = true;
-
-  const animateCard = (cardIndex) => {
-    if (!isMounted) return;
-
-    const card = cards[cardIndex];
-    const shimmerOverlay = card.querySelector('.shimmer-overlay');
-    const glowRing = card.querySelector('.glow-ring');
-    const tl = gsap.timeline();
-
-    gsap.set(cards, { 
-      x: '120%', 
-      scale: 0.8, 
-      opacity: 0,
-      zIndex: 1
-    });
-
-    tl.set(card, { zIndex: 10 })
-      .fromTo(card,
-        { x: '120%', scale: 0.8, opacity: 0 },
-        { 
-          x: '0%', 
-          scale: 1, 
-          opacity: 1, 
-          duration: 0.8, 
-          ease: "power3.out" 
-        }
-      )
-      .to([shimmerOverlay, glowRing], {
-        opacity: 1,
-        duration: 0.3,
-      }, "-=0.3")
-      .fromTo(shimmerOverlay,
-        { backgroundPosition: '-200% center' },
+      tl.fromTo(
+        titleRef.current,
+        { opacity: 0, y: 50, scale: 0.95 },
         {
-          backgroundPosition: '200% center',
-          duration: 1.0,
-          ease: "power2.inOut"
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1,
+          ease: "power3.out",
         },
-        "-=0.3"
-      )
-      .to(card, {
-        scale: 1.08,
-        duration: 1.0,
-        ease: "power2.inOut"
-      }, "-=1.0")
-      .to([shimmerOverlay, glowRing], {
-        opacity: 0,
-        duration: 0.4,
-      }, "-=0.2")
-      .to(card, {
-        scale: 1.08,
-        duration: 1.5,
-      })
-      .to(card, {
-        scale: 1,
-        duration: 0.8,
-        ease: "power2.inOut"
-      })
-      .to(card, {
-        x: '-120%',
-        scale: 0.8,
-        opacity: 0,
-        duration: 0.8,
-        ease: "power3.in",
-        onComplete: () => {
-          if (!isMounted) return;
-          
-          const nextIndex = (cardIndex + 1) % features.length;
-          setActiveFeatureIndex(nextIndex);
-          const newTimeline = animateCard(nextIndex);
-          carouselTimelineRef.current = newTimeline;
-        }
+        "-=0.3",
+      );
+
+      tl.fromTo(
+        subtitleRef.current,
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
+        "-=0.5",
+      );
+
+      particlesRef.current.filter(Boolean).forEach((particle, index) => {
+        const pos = particlePositions[index];
+
+        gsap.to(particle, {
+          y: -150,
+          x: Math.sin(index) * 30,
+          opacity: 0,
+          rotation: 180,
+          duration: pos.duration,
+          ease: "none",
+          repeat: -1,
+          delay: pos.delay,
+        });
       });
+    }, sectionRef);
 
-    return tl;
-  };
+    return () => {
+      ctx.revert();
+    };
+  }, [particlePositions]);
 
-  const initialTimeline = animateCard(0);
-  carouselTimelineRef.current = initialTimeline;
+  useEffect(() => {
+    if (!carouselRef.current) return;
 
-  
-  return () => {
-    isMounted = false;
-    
+    const carousel = carouselRef.current;
+    const cards = carousel.querySelectorAll(".feature-carousel-card");
+
+    if (cards.length === 0) return;
+
     if (carouselTimelineRef.current) {
       carouselTimelineRef.current.kill();
-      carouselTimelineRef.current = null;
     }
-  };
-}, [features.length]);
+
+    let isMounted = true;
+
+    const animateCard = (cardIndex) => {
+      if (!isMounted) return;
+
+      const card = cards[cardIndex];
+      const shimmerOverlay = card.querySelector(".shimmer-overlay");
+      const glowRing = card.querySelector(".glow-ring");
+      const tl = gsap.timeline();
+
+      gsap.set(cards, {
+        x: "120%",
+        scale: 0.8,
+        opacity: 0,
+        zIndex: 1,
+      });
+
+      tl.set(card, { zIndex: 10 })
+        .fromTo(
+          card,
+          { x: "120%", scale: 0.8, opacity: 0 },
+          {
+            x: "0%",
+            scale: 1,
+            opacity: 1,
+            duration: 0.8,
+            ease: "power3.out",
+          },
+        )
+        .to(
+          [shimmerOverlay, glowRing],
+          {
+            opacity: 1,
+            duration: 0.3,
+          },
+          "-=0.3",
+        )
+        .fromTo(
+          shimmerOverlay,
+          { backgroundPosition: "-200% center" },
+          {
+            backgroundPosition: "200% center",
+            duration: 1.0,
+            ease: "power2.inOut",
+          },
+          "-=0.3",
+        )
+        .to(
+          card,
+          {
+            scale: 1.08,
+            duration: 1.0,
+            ease: "power2.inOut",
+          },
+          "-=1.0",
+        )
+        .to(
+          [shimmerOverlay, glowRing],
+          {
+            opacity: 0,
+            duration: 0.4,
+          },
+          "-=0.2",
+        )
+        .to(card, {
+          scale: 1.08,
+          duration: 1.5,
+        })
+        .to(card, {
+          scale: 1,
+          duration: 0.8,
+          ease: "power2.inOut",
+        })
+        .to(card, {
+          x: "-120%",
+          scale: 0.8,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power3.in",
+          onComplete: () => {
+            if (!isMounted) return;
+
+            const nextIndex = (cardIndex + 1) % features.length;
+            setActiveFeatureIndex(nextIndex);
+            const newTimeline = animateCard(nextIndex);
+            carouselTimelineRef.current = newTimeline;
+          },
+        });
+
+      return tl;
+    };
+
+    const initialTimeline = animateCard(0);
+    carouselTimelineRef.current = initialTimeline;
+
+    return () => {
+      isMounted = false;
+
+      if (carouselTimelineRef.current) {
+        carouselTimelineRef.current.kill();
+        carouselTimelineRef.current = null;
+      }
+    };
+  }, [features.length]);
 
   useEffect(() => {
     const contexts = [];
-    
+
     cardRefs.current.forEach((card) => {
       if (!card) return;
 
@@ -385,19 +415,19 @@ useEffect(() => {
               start: "top 85%",
               toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       }, card);
 
       contexts.push(ctx);
     });
 
-    return () => contexts.forEach(ctx => ctx.revert());
+    return () => contexts.forEach((ctx) => ctx.revert());
   }, []);
 
   useEffect(() => {
     const contexts = [];
-    
+
     faqRefs.current.forEach((faq, faqIndex) => {
       if (!faq) return;
 
@@ -416,14 +446,14 @@ useEffect(() => {
               start: "top 90%",
               toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       }, faq);
 
       contexts.push(ctx);
     });
 
-    return () => contexts.forEach(ctx => ctx.revert());
+    return () => contexts.forEach((ctx) => ctx.revert());
   }, []);
 
   useEffect(() => {
@@ -444,7 +474,7 @@ useEffect(() => {
             start: "top 85%",
             toggleActions: "play none none reverse",
           },
-        }
+        },
       );
     }, ctaRef.current);
 
@@ -521,20 +551,20 @@ useEffect(() => {
               top: `${pos.top}%`,
               opacity: 0.6,
               boxShadow: `0 0 ${pos.size * 3}px ${THEME.accentLight}`,
-              willChange: 'transform, opacity'
+              willChange: "transform, opacity",
             }}
           />
         ))}
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">
-        
         <div ref={heroRef} className="text-center mb-24 sm:mb-32">
           <div
             ref={badgeRef}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full mb-8 backdrop-blur-xl border"
             style={{
-              background: "linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.15))",
+              background:
+                "linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(139, 92, 246, 0.15))",
               borderColor: "rgba(129, 140, 248, 0.3)",
               boxShadow: "0 8px 32px rgba(79, 70, 229, 0.3)",
             }}
@@ -560,7 +590,8 @@ useEffect(() => {
             ref={subtitleRef}
             className="text-lg sm:text-xl md:text-2xl text-white/70 max-w-3xl mx-auto leading-relaxed"
           >
-            No credit card. No sign-up. No limits. Just powerful tools that work. (◍•ᴗ•◍)
+            No credit card. No sign-up. No limits. Just powerful tools that
+            work. (◍•ᴗ•◍)
           </p>
         </div>
 
@@ -569,10 +600,12 @@ useEffect(() => {
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-purple-300">
               What You Get
             </h2>
-            <p className="text-white/60 text-lg">Everything, with no strings attached</p>
+            <p className="text-white/60 text-lg">
+              Everything, with no strings attached
+            </p>
           </div>
 
-          <div 
+          <div
             ref={carouselRef}
             className="relative h-[400px] sm:h-[450px] md:h-[500px] flex items-center justify-center overflow-hidden"
           >
@@ -583,7 +616,7 @@ useEffect(() => {
                   key={featureIndex}
                   className="feature-carousel-card absolute w-[280px] sm:w-[400px] md:w-[550px] max-w-2xl"
                   style={{
-                    x: '120%',
+                    x: "120%",
                     opacity: 0,
                   }}
                 >
@@ -606,12 +639,11 @@ useEffect(() => {
                       className="glow-ring absolute inset-0 rounded-3xl opacity-0 pointer-events-none"
                       style={{
                         boxShadow: `0 0 30px 10px ${feature.glow}, inset 0 0 30px 5px ${feature.glow}`,
-                        filter: 'blur(3px)',
+                        filter: "blur(3px)",
                       }}
                     />
 
                     <div className="relative p-8 sm:p-10 md:p-12 rounded-3xl backdrop-blur-xl overflow-hidden">
-                      
                       <div
                         className="shimmer-overlay absolute inset-0 opacity-0 pointer-events-none"
                         style={{
@@ -621,7 +653,7 @@ useEffect(() => {
                             ${feature.color}40 50%,
                             transparent 100%
                           )`,
-                          backgroundSize: '200% 100%',
+                          backgroundSize: "200% 100%",
                         }}
                       />
 
@@ -654,26 +686,36 @@ useEffect(() => {
                                 background: `radial-gradient(circle, ${feature.color}, transparent)`,
                               }}
                             />
-                            
+
                             <div className="relative z-10">
-                              <Icon size={48} color={feature.color} strokeWidth={2} className="sm:w-14 sm:h-14 md:w-16 md:h-16" />
+                              <Icon
+                                size={48}
+                                color={feature.color}
+                                strokeWidth={2}
+                                className="sm:w-14 sm:h-14 md:w-16 md:h-16"
+                              />
                             </div>
                           </div>
                         </div>
 
-                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
+                        <div
+                          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
                           style={{
                             background: `linear-gradient(135deg, ${feature.color}20, ${feature.color}10)`,
                             border: `1px solid ${feature.color}30`,
                           }}
                         >
                           <Sparkles size={14} color={feature.color} />
-                          <span className="text-xs sm:text-sm font-bold" style={{ color: feature.color }}>
+                          <span
+                            className="text-xs sm:text-sm font-bold"
+                            style={{ color: feature.color }}
+                          >
                             Feature {featureIndex + 1} of {features.length}
                           </span>
                         </div>
 
-                        <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-4"
+                        <h3
+                          className="text-2xl sm:text-3xl md:text-4xl font-black text-white mb-4"
                           style={{
                             textShadow: `0 0 40px ${feature.glow}`,
                           }}
@@ -705,15 +747,17 @@ useEffect(() => {
                 key={featureIndex}
                 className="transition-all duration-300"
                 style={{
-                  width: activeFeatureIndex === featureIndex ? '40px' : '12px',
-                  height: '12px',
-                  borderRadius: '6px',
-                  background: activeFeatureIndex === featureIndex 
-                    ? `linear-gradient(90deg, ${feature.color}, ${feature.color}80)`
-                    : 'rgba(255, 255, 255, 0.2)',
-                  boxShadow: activeFeatureIndex === featureIndex 
-                    ? `0 0 20px ${feature.glow}`
-                    : 'none',
+                  width: activeFeatureIndex === featureIndex ? "40px" : "12px",
+                  height: "12px",
+                  borderRadius: "6px",
+                  background:
+                    activeFeatureIndex === featureIndex
+                      ? `linear-gradient(90deg, ${feature.color}, ${feature.color}80)`
+                      : "rgba(255, 255, 255, 0.2)",
+                  boxShadow:
+                    activeFeatureIndex === featureIndex
+                      ? `0 0 20px ${feature.glow}`
+                      : "none",
                 }}
               />
             ))}
@@ -728,13 +772,15 @@ useEffect(() => {
             <div
               className="absolute inset-0 rounded-3xl p-[2px]"
               style={{
-                background: "linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3))",
+                background:
+                  "linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3))",
               }}
             >
               <div
                 className="absolute inset-0 rounded-3xl"
                 style={{
-                  background: "linear-gradient(135deg, rgba(15, 15, 25, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%)",
+                  background:
+                    "linear-gradient(135deg, rgba(15, 15, 25, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%)",
                 }}
               />
             </div>
@@ -742,10 +788,11 @@ useEffect(() => {
             <div
               className="absolute inset-0 blur-3xl opacity-30"
               style={{
-                background: "radial-gradient(circle at center, rgba(99, 102, 241, 0.4), transparent 70%)",
+                background:
+                  "radial-gradient(circle at center, rgba(99, 102, 241, 0.4), transparent 70%)",
               }}
             />
-            
+
             <div className="relative z-10 text-center">
               <div
                 className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-8"
@@ -762,24 +809,27 @@ useEffect(() => {
               </h2>
 
               <p className="text-lg sm:text-xl text-white/70 mb-10 max-w-2xl mx-auto leading-relaxed">
-                We built DocFlux because we believe everyone deserves access to great tools. 
-                No paywalls, no premium tiers, no hidden costs. Just free, powerful document conversion.
+                We built DocFlux because we believe everyone deserves access to
+                great tools. No paywalls, no premium tiers, no hidden costs.
+                Just free, powerful document conversion.
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-base">
-                {["No Ads", "No Tracking", "No Account Needed"].map((text, textIndex) => (
-                  <div
-                    key={textIndex}
-                    className="flex items-center gap-2 px-6 py-3 rounded-full backdrop-blur-sm"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.05)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)",
-                    }}
-                  >
-                    <Check className="w-5 h-5 text-green-400" />
-                    <span className="text-white/90">{text}</span>
-                  </div>
-                ))}
+                {["No Ads", "No Tracking", "No Account Needed"].map(
+                  (text, textIndex) => (
+                    <div
+                      key={textIndex}
+                      className="flex items-center gap-2 px-6 py-3 rounded-full backdrop-blur-sm"
+                      style={{
+                        background: "rgba(255, 255, 255, 0.05)",
+                        border: "1px solid rgba(255, 255, 255, 0.1)",
+                      }}
+                    >
+                      <Check className="w-5 h-5 text-green-400" />
+                      <span className="text-white/90">{text}</span>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           </div>
@@ -801,7 +851,10 @@ useEffect(() => {
                 className="rounded-2xl backdrop-blur-xl border overflow-hidden"
                 style={{
                   background: "rgba(30, 30, 45, 0.4)",
-                  borderColor: activeFaq === faqIndex ? "rgba(129, 140, 248, 0.3)" : "rgba(255, 255, 255, 0.1)",
+                  borderColor:
+                    activeFaq === faqIndex
+                      ? "rgba(129, 140, 248, 0.3)"
+                      : "rgba(255, 255, 255, 0.1)",
                 }}
               >
                 <button
@@ -827,7 +880,7 @@ useEffect(() => {
                     />
                   </svg>
                 </button>
-                
+
                 <div
                   className={`transition-all duration-500 ease-in-out ${
                     activeFaq === faqIndex
@@ -852,13 +905,15 @@ useEffect(() => {
           <div
             className="absolute inset-0 rounded-3xl p-[2px]"
             style={{
-              background: "linear-gradient(135deg, rgba(79, 70, 229, 0.4), rgba(139, 92, 246, 0.4))",
+              background:
+                "linear-gradient(135deg, rgba(79, 70, 229, 0.4), rgba(139, 92, 246, 0.4))",
             }}
           >
             <div
               className="absolute inset-0 rounded-3xl"
               style={{
-                background: "linear-gradient(135deg, rgba(15, 15, 25, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%)",
+                background:
+                  "linear-gradient(135deg, rgba(15, 15, 25, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%)",
               }}
             />
           </div>
@@ -866,10 +921,11 @@ useEffect(() => {
           <div
             className="absolute inset-0 blur-3xl opacity-40"
             style={{
-              background: "radial-gradient(circle at center, rgba(99, 102, 241, 0.5), transparent 70%)",
+              background:
+                "radial-gradient(circle at center, rgba(99, 102, 241, 0.5), transparent 70%)",
             }}
           />
-          
+
           <div className="relative z-10">
             <h2 className="text-4xl sm:text-5xl font-black mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">
               Ready to Get Started?
@@ -877,7 +933,7 @@ useEffect(() => {
             <p className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
               No sign-up required. Just upload your file and start converting.
             </p>
-            
+
             <div className="inline-block relative group">
               <a
                 href="/tools"
@@ -921,7 +977,8 @@ useEffect(() => {
                 <div
                   className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
                   style={{
-                    background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+                    background:
+                      "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
                   }}
                 />
               </a>
@@ -931,7 +988,8 @@ useEffect(() => {
                 style={{
                   background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
                   transform: "scale(1.1)",
-                  animation: "pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                  animation:
+                    "pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
                 }}
               />
             </div>

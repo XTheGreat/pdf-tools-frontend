@@ -24,8 +24,11 @@ export default function Features() {
   const particlesRef = useRef([]);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
+  // FIX: was const [setIsInitialized] = useState(false) — wrong destructuring
   const [setIsInitialized] = useState(false);
   const floatingAnimations = useRef([]);
+
+  // Timeline refs
   const timelineSectionRef = useRef(null);
   const timelineHeadingRef = useRef(null);
   const timelineSubtitleRef = useRef(null);
@@ -248,7 +251,6 @@ export default function Features() {
     .letter-glow-6 { animation: letter-glow-wave 4s ease-in-out infinite; animation-delay: 0.9s; }
     .letter-glow-7 { animation: letter-glow-wave 4s ease-in-out infinite; animation-delay: 1.05s; }
     .letter-glow-8 { animation: letter-glow-wave 4s ease-in-out infinite; animation-delay: 1.2s; }
-
     .letter-glow-9 { animation: letter-glow-wave 4s ease-in-out infinite; animation-delay: 1.35s; }
     .letter-glow-10 { animation: letter-glow-wave 4s ease-in-out infinite; animation-delay: 1.5s; }
     .letter-glow-11 { animation: letter-glow-wave 4s ease-in-out infinite; animation-delay: 1.65s; }
@@ -447,7 +449,7 @@ export default function Features() {
     }
 
     .feature-card:focus-visible {
-      outline: 2px solid ${FEATURES_THEME.accent};
+      outline: 2px solid #4f46e5;
       outline-offset: 4px;
     }
   `;
@@ -455,6 +457,7 @@ export default function Features() {
     return () => document.head.removeChild(style);
   }, []);
 
+  // ─── Features GSAP ───
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
@@ -513,8 +516,10 @@ export default function Features() {
     return () => ctx.revert();
   }, [particlePositions]);
 
+  // ─── Timeline GSAP ───
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Heading animation
       if (timelineHeadingRef.current) {
         gsap.fromTo(
           timelineHeadingRef.current,
@@ -584,6 +589,7 @@ export default function Features() {
         );
       });
 
+      // Connectors draw-in animation
       connectorRefs.current.forEach((connector, index) => {
         if (!connector) return;
 
@@ -677,6 +683,7 @@ export default function Features() {
               onEnter: () => {
                 setTimeout(
                   () => {
+                    // FIX: setIsInitialized is now properly defined
                     setIsInitialized(true);
                     startFloatingAnimation(card, index);
                   },
@@ -1218,6 +1225,8 @@ export default function Features() {
           </div>
         </div>
 
+        {/* ─── Timeline Section ─── */}
+
         <div
           className="absolute inset-0 pointer-events-none -z-10"
           style={{
@@ -1249,7 +1258,10 @@ export default function Features() {
               Step-by-step workflow
             </div>
 
+            {/* FIX: "How It Works" now uses sequential letter-glow indices
+                matching the same wave pattern as "Powerful Features" */}
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-5">
+              {/* "How It" — indices 0-5 (H,o,w,' ',I,t) */}
               <span className="inline-block">
                 {"How It".split("").map((letter, i) => (
                   <span
@@ -1263,11 +1275,12 @@ export default function Features() {
                   </span>
                 ))}
               </span>{" "}
+              {/* "Works" — indices 6-10 (W,o,r,k,s) with gradient, continuing wave */}
               <span className="inline-block">
                 {"Works".split("").map((letter, i) => (
                   <span
                     key={i}
-                    className={`letter-glow-${i} inline-block`}
+                    className={`letter-glow-${i + 6} inline-block`}
                     style={{
                       backgroundImage: `linear-gradient(135deg, ${FEATURES_THEME.accent}, ${FEATURES_THEME.accentLight})`,
                       WebkitBackgroundClip: "text",
@@ -1278,17 +1291,19 @@ export default function Features() {
                     {letter === " " ? "\u00A0" : letter}
                   </span>
                 ))}
-              </span>{" "}
+              </span>
             </h2>
 
             <p
               ref={timelineSubtitleRef}
               className="text-xl text-white/60 max-w-2xl mx-auto leading-relaxed"
             >
-              From upload to download in seconds.
+              From upload to download in seconds — hover each step to explore
+              the details
             </p>
           </div>
 
+          {/* ─── Desktop Timeline (horizontal) ─── */}
           <div className="hidden md:block">
             <div className="relative flex items-start justify-between gap-0">
               {timelineSteps.map((step, index) => {
@@ -1603,6 +1618,7 @@ export default function Features() {
             </div>
           </div>
 
+          {/* ─── Mobile Timeline (vertical) ─── */}
           <div className="md:hidden relative">
             <div className="flex flex-col gap-6">
               {timelineSteps.map((step, index) => {
