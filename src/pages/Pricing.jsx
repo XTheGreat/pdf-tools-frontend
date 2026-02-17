@@ -815,7 +815,7 @@ export default function PricingPage() {
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-base">
-                {["No Ads", "No Tracking", "No Account Needed"].map(
+                {["No Tracking", "No Account Needed"].map(
                   (text, textIndex) => (
                     <div
                       key={textIndex}
@@ -959,7 +959,7 @@ export default function PricingPage() {
                   });
                 }}
               >
-                <span className="relative z-10">Try It Now - It's Free!</span>
+                <span className="relative z-10">Try It Now!</span>
                 <svg
                   className="w-6 h-6 relative z-10 group-hover:translate-x-1 transition-transform"
                   fill="none"
