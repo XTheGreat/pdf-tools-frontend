@@ -26,8 +26,6 @@ export default function Features() {
   const [selectedFeature, setSelectedFeature] = useState(null);
   const [setIsInitialized] = useState(false);
   const floatingAnimations = useRef([]);
-
-  // Timeline refs
   const timelineSectionRef = useRef(null);
   const timelineHeadingRef = useRef(null);
   const timelineSubtitleRef = useRef(null);
@@ -457,7 +455,6 @@ export default function Features() {
     return () => document.head.removeChild(style);
   }, []);
 
-  // ─── Features GSAP ───
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
@@ -516,10 +513,8 @@ export default function Features() {
     return () => ctx.revert();
   }, [particlePositions]);
 
-  // ─── Timeline GSAP ───
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Heading animation
       if (timelineHeadingRef.current) {
         gsap.fromTo(
           timelineHeadingRef.current,
@@ -589,7 +584,6 @@ export default function Features() {
         );
       });
 
-      // Connectors draw-in animation
       connectorRefs.current.forEach((connector, index) => {
         if (!connector) return;
 
@@ -1224,8 +1218,6 @@ export default function Features() {
           </div>
         </div>
 
-        {/* ─── Timeline Section ─── */}
-
         <div
           className="absolute inset-0 pointer-events-none -z-10"
           style={{
@@ -1293,12 +1285,10 @@ export default function Features() {
               ref={timelineSubtitleRef}
               className="text-xl text-white/60 max-w-2xl mx-auto leading-relaxed"
             >
-              From upload to download in seconds — hover each step to explore
-              the details
+              From upload to download in seconds.
             </p>
           </div>
 
-          {/* ─── Desktop Timeline (horizontal) ─── */}
           <div className="hidden md:block">
             <div className="relative flex items-start justify-between gap-0">
               {timelineSteps.map((step, index) => {
@@ -1613,7 +1603,6 @@ export default function Features() {
             </div>
           </div>
 
-          {/* ─── Mobile Timeline (vertical) ─── */}
           <div className="md:hidden relative">
             <div className="flex flex-col gap-6">
               {timelineSteps.map((step, index) => {

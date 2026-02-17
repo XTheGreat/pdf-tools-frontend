@@ -845,25 +845,7 @@ const getParticleCount = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-5 md:bottom-10 left-1/2 -translate-x-1/2" aria-hidden="true">
-          <div className="animate-bounce">
-            <div
-              className="w-6 h-10 rounded-full border-2 flex items-start justify-center p-2"
-              style={{
-                borderColor: HERO_THEME.accentLight,
-                boxShadow: `0 0 20px ${HERO_THEME.glow}`,
-              }}
-            >
-              <div
-                className="w-1.5 h-1.5 rounded-full animate-pulse"
-                style={{
-                  background: HERO_THEME.accent,
-                  boxShadow: `0 0 10px ${HERO_THEME.glow}`,
-                }}
-              />
-            </div>
-          </div>
-        </div>
+      
       </section>
     </>
   );

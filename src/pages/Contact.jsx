@@ -525,24 +525,24 @@ export default function Contact() {
     {
       icon: Phone,
       title: "Call Us",
-      value: "+62 852-0520-3869",
+      value: "+62 852-1234-5678",
       description: "Mon-Fri, 9AM - 6PM EST",
       color: "#10b981",
     },
-    {
-      icon: MapPin,
-      title: "Visit Us",
-      value: "-",
-      description: "-",
-      color: "#f59e0b",
-    },
-    {
-      icon: MessageCircle,
-      title: "Live Chat",
-      value: "Chat with us now",
-      description: "Average response: 2 mins",
-      color: "#8b5cf6",
-    },
+    // {
+    //   icon: MapPin,
+    //   title: "Visit Us",
+    //   value: "-",
+    //   description: "-",
+    //   color: "#f59e0b",
+    // },
+    // {
+    //   icon: MessageCircle,
+    //   title: "Live Chat",
+    //   value: "Chat with us now",
+    //   description: "Average response: 2 mins",
+    //   color: "#8b5cf6",
+    // },
   ];
 
   const socialLinks = [
@@ -751,7 +751,7 @@ export default function Contact() {
               <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
                 <div className="text-center">
                   <div className="text-6xl mb-4">🗺️</div>
-                  <p className="text-white/70 text-sm">Interactive Map</p>
+                  <p className="text-white/70 text-sm">Interactive Map(Coming soon)</p>
                   <p className="text-white/50 text-xs mt-1">-</p>
                 </div>
               </div>

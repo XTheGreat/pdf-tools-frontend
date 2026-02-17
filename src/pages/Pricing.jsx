@@ -560,7 +560,7 @@ useEffect(() => {
             ref={subtitleRef}
             className="text-lg sm:text-xl md:text-2xl text-white/70 max-w-3xl mx-auto leading-relaxed"
           >
-            No credit card. No sign-up. No limits. Just powerful tools that work.
+            No credit card. No sign-up. No limits. Just powerful tools that work. (◍•ᴗ•◍)
           </p>
         </div>
 
