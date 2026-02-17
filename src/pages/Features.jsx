@@ -24,11 +24,8 @@ export default function Features() {
   const particlesRef = useRef([]);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
-  // FIX: was const [setIsInitialized] = useState(false) — wrong destructuring
   const [setIsInitialized] = useState(false);
   const floatingAnimations = useRef([]);
-
-  // Timeline refs
   const timelineSectionRef = useRef(null);
   const timelineHeadingRef = useRef(null);
   const timelineSubtitleRef = useRef(null);
@@ -1808,7 +1805,7 @@ export default function Features() {
                 }}
               >
                 <span className="relative z-10 flex items-center gap-3">
-                  Try It Free — No signup needed
+                  Try It Free
                   <svg
                     className="w-5 h-5 group-hover:translate-x-1 transition-transform"
                     fill="none"
