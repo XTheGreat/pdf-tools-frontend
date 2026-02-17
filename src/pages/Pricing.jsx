@@ -59,53 +59,57 @@ export default function PricingPage() {
     particlesRef.current = Array(getParticleCount()).fill(null);
   }
 
-  const features = [
-    {
-      icon: InfinityIcon,
-      title: "Unlimited Usage",
-      description:
-        "Convert as many documents as you need, whenever you need them",
-      color: "#667eea",
-      glow: "rgba(102, 126, 234, 0.5)",
-    },
-    {
-      icon: Zap,
-      title: "Lightning Fast",
-      description:
-        "Process your files in seconds with our optimized infrastructure",
-      color: "#0ea5e9",
-      glow: "rgba(14, 165, 233, 0.5)",
-    },
-    {
-      icon: Shield,
-      title: "100% Secure",
-      description:
-        "Your files are encrypted and automatically deleted after processing",
-      color: "#8b5cf6",
-      glow: "rgba(139, 92, 246, 0.5)",
-    },
-    {
-      icon: Users,
-      title: "No Sign-Up Required",
-      description: "Start converting immediately without creating an account",
-      color: "#ec4899",
-      glow: "rgba(236, 72, 153, 0.5)",
-    },
-    {
-      icon: Lock,
-      title: "No Hidden Fees",
-      description: "Completely free forever. No premium tiers, no paywalls",
-      color: "#f59e0b",
-      glow: "rgba(245, 158, 11, 0.5)",
-    },
-    {
-      icon: Heart,
-      title: "Thoughtfully Crafted",
-      description: "Focused on clean design and real-world needs",
-      color: "#ef4444",
-      glow: "rgba(239, 68, 68, 0.5)",
-    },
-  ];
+const features = [
+  {
+    icon: InfinityIcon,
+    title: "Use It Freely",
+    description:
+      "Convert as many documents as you want, anytime without limits",
+    color: "#667eea",
+    glow: "rgba(102, 126, 234, 0.5)",
+  },
+  {
+    icon: Zap,
+    title: "Fast by Default",
+    description:
+      "Your files are processed in seconds with a performance-first setup",
+    color: "#0ea5e9",
+    glow: "rgba(14, 165, 233, 0.5)",
+  },
+  {
+    icon: Shield,
+    title: "Privacy Comes First",
+    description:
+      "Files are encrypted during processing and removed automatically",
+    color: "#8b5cf6",
+    glow: "rgba(139, 92, 246, 0.5)",
+  },
+  {
+    icon: Users,
+    title: "No Account Needed",
+    description:
+      "Jump straight in and convert your files without signing up",
+    color: "#ec4899",
+    glow: "rgba(236, 72, 153, 0.5)",
+  },
+  {
+    icon: Lock,
+    title: "No Surprises",
+    description:
+      "Free to use with no paywalls, subscriptions, or hidden costs",
+    color: "#f59e0b",
+    glow: "rgba(245, 158, 11, 0.5)",
+  },
+  {
+    icon: Heart,
+    title: "Made with Care",
+    description:
+      "Designed thoughtfully with real users and real needs in mind",
+    color: "#ef4444",
+    glow: "rgba(239, 68, 68, 0.5)",
+  },
+];
+
 
   const faqs = [
     {
